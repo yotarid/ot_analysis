@@ -57,7 +57,7 @@ def main():
   pss_plot = plt.plot(ssa_thresholds, pss_efficiencies, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s')
   stub_plot = plt.plot(ssa_thresholds, stub_efficiencies, linestyle='solid', linewidth=2, marker='o', color='darkgreen', label='Stubs')
   #plt.title("DESY26_2 Threshold scan @Bias(300V)")
-  plt.title("Threshold scan at 300V bias voltage")
+  #plt.title("Threshold scan at 300V bias voltage")
   plt.xlabel('Threshold (DAC)')
   #plt.ylim((0, 105))
   plt.ylabel("Efficiency (%)")

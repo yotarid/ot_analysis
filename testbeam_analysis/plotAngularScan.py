@@ -72,9 +72,10 @@ def main():
   ##params_pos[2] = -params_neg[2]
   #params_pos[3] = -params_neg[3]
   print(params_pos, params_neg)
+  #print(params_pos)
 
-  #psp_plot = plt.plot(angles, psp_efficiencies, linestyle='solid', linewidth=2, marker='o', color='darkred', label='PS-p')
-  #pss_plot = plt.plot(angles, pss_efficiencies, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s')
+  psp_plot = plt.plot(angles, psp_efficiencies, linestyle='solid', linewidth=2, marker='o', color='darkred', label='PS-p')
+  pss_plot = plt.plot(angles, pss_efficiencies, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s')
   #plt.xticks(np.arange(-40, 40, 10))
   #plt.xlim([-40, 40])
   #plt.ylim([0, 105])
@@ -85,18 +86,21 @@ def main():
   ## plt.show()
   #plt.savefig("./plots/AngularScan_"+campaign+"_HitEfficiency_Dobby.png")
 
-  stub_plot = plt.plot(angles, stub_efficiencies, linestyle='None', marker='o', markersize=8, color='darkgreen')
-  fit_plot_pos = plt.plot(range(0, 35, 1), np.array(fit_func(range(0, 35, 1), *params_pos))*100, linestyle='-', linewidth=2.5, color='darkgreen')
+  #plt.clf()
+
+  stub_plot = plt.plot(angles, stub_efficiencies, linestyle='None', marker='o', color='darkgreen', label="Stubs")
+  fit_plot_pos = plt.plot(range(-6, 35, 1), np.array(fit_func(range(-6, 35, 1), *params_pos))*100, linestyle='-', linewidth=2.5, color='darkgreen')
   fit_plot_neg = plt.plot(range(-1, -35, -1), np.array(fit_func(range(-1, -35, -1), *params_neg))*100, linestyle='-', linewidth=2.5, color='darkgreen')
-  plt.xticks(np.arange(-40, 40, 10))
+  plt.xticks(np.arange(-40, 40, 5))
   plt.xlim([-40, 40])
   plt.ylim([0, 105])
-  plt.title("Angular scan at 300V bias voltage, 90 ThDAC MPA, 50 ThDAC SSA")
+  #plt.title("Angular scan, 300V bias voltage, 90 ThDAC MPA, 50 ThDAC SSA")
   plt.xlabel("Angle (degrees)")
-  plt.ylabel("Stub Efficiency (%)")
+  plt.ylabel("Efficiency (%)")
+  plt.legend(loc="center left")
   plt.grid()
   # plt.show()
-  plt.savefig("./plots/AngularScan_"+campaign+"_StubEfficiency_Dobby.png")
+  plt.savefig("./plots/AngularScan_"+campaign+"_Efficiency_Dobby.png")
 
 if __name__ == "__main__":
   sys.exit(main())
