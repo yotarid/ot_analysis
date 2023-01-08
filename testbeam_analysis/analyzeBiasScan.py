@@ -33,7 +33,7 @@ def main():
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
 
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
-    for tdc in range(0,8):
+    for tdc in range(0,9):
        psp_tdc_efficiencies.append(psp_efficiency_vs_tdc.GetBinContent(tdc))
        pss_tdc_efficiencies.append(pss_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
@@ -55,15 +55,10 @@ def main():
   pss_plot = plt.plot(bias_voltages, pss_efficiencies, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s')
   stub_plot = plt.plot(bias_voltages, stub_efficiencies, linestyle='solid', linewidth=2, marker='o', color='darkgreen', label='Stubs')
   plt.xlabel('Voltage (V)')
-  #plt.ylim((0, 105))
   plt.ylabel("Efficiency (%)")
   plt.legend(loc="center left")
   plt.grid()
-  # plt.show()
-  plt.savefig("./plots/BiasScan_"+campaign+"_Efficiency_Dobby.png")
-
-
-
+  plt.savefig("./plots/BiasScan_Efficiency_"+campaign+".png")
 
 if __name__ == "__main__":
   sys.exit(main())

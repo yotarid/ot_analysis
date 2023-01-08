@@ -39,7 +39,7 @@ def main():
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
 
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
-    for tdc in range(0,8):
+    for tdc in range(0,9):
        psp_tdc_efficiencies.append(psp_efficiency_vs_tdc.GetBinContent(tdc))
        pss_tdc_efficiencies.append(pss_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
@@ -94,13 +94,11 @@ def main():
   plt.xticks(np.arange(-40, 40, 5))
   plt.xlim([-40, 40])
   plt.ylim([0, 105])
-  #plt.title("Angular scan, 300V bias voltage, 90 ThDAC MPA, 50 ThDAC SSA")
   plt.xlabel("Angle (degrees)")
   plt.ylabel("Efficiency (%)")
   plt.legend(loc="center left")
   plt.grid()
-  # plt.show()
-  plt.savefig("./plots/AngularScan_"+campaign+"_Efficiency_Dobby.png")
+  plt.savefig("./plots/AngularScan_Efficiency_"+campaign+".png")
 
 if __name__ == "__main__":
   sys.exit(main())
