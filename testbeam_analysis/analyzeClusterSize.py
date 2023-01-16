@@ -1,4 +1,4 @@
-from ROOT import TFile 
+from ROOT import TFile, TF1Convolution, TGraph, TF1, TCanvas
 import csv, argparse, sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,29 +13,22 @@ def parseCSV(file_path):
   csv_file = open(file_path, mode='r') 
   return csv.DictReader(csv_file)
 
-def gaus_func(t, theta, sigma):
-  return (1/np.sqrt(2*np.pi * sigma**2)) * np.exp(-(t - theta)**2 / (2 * sigma**2))
+def get_cluster_size_yfit(angle_list, cluster_size_list, yfit_range):
+  xMin = -60.
+  xMax = 60.
+  convGaus = TF1("convGaus","1./TMath::Sqrt(2.*TMath::Pi())/[0]*exp(-0.5*x*x/([0]*[0]))", xMin, xMax)
+  clustersizeOpt = TF1("clustersizeOpt","[0]+[1]/0.09*abs(tan((x-[2])*TMath::Pi()/180.))",xMin,xMax)
+  clustersizeFuncConv = TF1Convolution(clustersizeOpt, convGaus, xMin, xMax, True)
 
-def size_func(t, s0, alpha, theta0):
-  return s0 + alpha * np.absolute(np.tan(t - theta0)) 
-
-def integrand(t, s0, alpha, theta0, theta, sigma):
-  return size_func(t, s0, alpha, theta0) * gaus_func(t, theta, sigma)
-
-def integral(s0, alpha, theta0, theta, sigma):
-  return integrate.quad(integrand, np.NINF, np.Inf, args=(s0, alpha, theta0, theta, sigma), limit=1000000)[0]
-
-def fit_func(theta, s0, alpha, theta0, sigma):
-  return [integral(s0, alpha, theta0, t, sigma) for t in theta]
-
-#def gaus_func(x, p0):
-#  return (1/np.sqrt(2*np.pi)) * np.exp(-0.5 * x**2 / p0**2)
-#
-#def size_func(x, p0, p1, p2):
-#  return p0 + p1 * np.absolute(np.tan(x - p2) * np.pi/180) 
-#
-#def fit_func(x, s0, alpha, theta0, sigma):
-#  return np.convolve(size_func(x, s0, alpha, theta0), gaus_func(x, sigma), mode='full')[0:len(x)]
+  fit_func = TF1("psp_fit_func", clustersizeFuncConv, xMin,xMax, clustersizeFuncConv.GetNpar())
+  fit_func.SetParameter(0,1.)
+  fit_func.SetParameter(1,0.28)
+  fit_func.SetParameter(2,0.)
+  fit_func.SetParameter(3,4.)
+  graph = TGraph(len(angle_list), np.array(angle_list), np.array(cluster_size_list))
+  graph.Fit(fit_func)
+  yfit = [fit_func(x) for x in np.linspace(yfit_range[0], yfit_range[1], yfit_range[2])]
+  return yfit
 
 def main():
   parser = argparse.ArgumentParser(description="angular scan")
@@ -65,15 +58,11 @@ def main():
     psp_mean_cluster_size_list.append(psp_mean_cluster_size)
     pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
-  psp_params, psp_cov = optimize.curve_fit(fit_func, np.array(angle_list), np.array(psp_mean_cluster_size_list))  
-  pss_params, pss_cov = optimize.curve_fit(fit_func, np.array(angle_list), np.array(pss_mean_cluster_size_list))  
-  print(psp_params, pss_params)
-
   psp_plot = plt.plot(angle_list, psp_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o', color='darkred', label='PS-p (threshold = 10 DAC)')  
-  psp_fit_plot = plt.plot(np.linspace(-35, 35, 10000), np.array(fit_func(np.linspace(-35, 35, 10000), *psp_params))*100, linestyle='-', linewidth=2.5, color='darkred')
+  psp_fit_plot = plt.plot(np.linspace(-35, 35, 100000), get_cluster_size_yfit(angle_list, psp_mean_cluster_size_list, [-35, 35, 100000]), linestyle='-', linewidth=2.5, color='darkred')
 
   pss_plot = plt.plot(angle_list, pss_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o', color='navy', label='PS-s (threshold = 25 DAC)')  
-  pss_fit_plot = plt.plot(np.linspace(-35, 35, 10000), np.array(fit_func(np.linspace(-35, 35, 10000), *pss_params))*100, linestyle='-', linewidth=2.5, color='navy')
+  pss_fit_plot = plt.plot(np.linspace(-35, 35, 100000), get_cluster_size_yfit(angle_list, pss_mean_cluster_size_list, [-35, 35, 100000]), linestyle='-', linewidth=2.5, color='navy')
 
   plt.xticks(np.arange(-40, 40, 10))
   plt.xlim([-40, 40])
