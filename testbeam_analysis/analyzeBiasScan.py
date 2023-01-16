@@ -58,7 +58,7 @@ def main():
   plt.ylabel("Efficiency (%)")
   plt.legend(loc="center left")
   plt.grid()
-  plt.savefig("./plots/BiasScan_Efficiency_"+campaign+".png")
+  plt.savefig("./plots/BiasScan_Efficiency_"+campaign+".pdf")
 
 if __name__ == "__main__":
   sys.exit(main())

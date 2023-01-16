@@ -61,7 +61,7 @@ def main():
   plt.grid()
   plt.xticks(rotation=90, fontsize=5)
 
-  plt.savefig("./plots/BestTDC_"+campaign+".png")
+  plt.savefig("./plots/BestTDC_"+campaign+".pdf")
 
 if __name__ == "__main__":
   sys.exit(main())

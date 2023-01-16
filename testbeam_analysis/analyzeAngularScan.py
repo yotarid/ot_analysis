@@ -67,26 +67,10 @@ def main():
   #params, cov = optimize.curve_fit(fit_func, np.array(angles), np.array(stub_efficiency), p0=[1, 1, 15, 1], maxfev=8000)
   params_pos, cov_pos = optimize.curve_fit(fit_func, np.array(angles_pos), np.array(stub_efficiencies_pos), maxfev=10000)
   params_neg, cov_neg = optimize.curve_fit(fit_func, np.array(angles_neg), np.array(stub_efficiencies_neg), maxfev=10000)
-  #params_pos[0] = params_neg[0]
-  #params_pos[1] = params_neg[1]
-  ##params_pos[2] = -params_neg[2]
-  #params_pos[3] = -params_neg[3]
   print(params_pos, params_neg)
-  #print(params_pos)
 
   psp_plot = plt.plot(angles, psp_efficiencies, linestyle='solid', linewidth=2, marker='o', color='darkred', label='PS-p')
   pss_plot = plt.plot(angles, pss_efficiencies, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s')
-  #plt.xticks(np.arange(-40, 40, 10))
-  #plt.xlim([-40, 40])
-  #plt.ylim([0, 105])
-  #plt.title("Angular scan at 300V bias voltage, 90 ThDAC MPA, 50 ThDAC SSA")
-  #plt.xlabel("Angle (degrees)")
-  #plt.ylabel("Hit Efficiency (%)")
-  #plt.grid()
-  ## plt.show()
-  #plt.savefig("./plots/AngularScan_"+campaign+"_HitEfficiency_Dobby.png")
-
-  #plt.clf()
 
   stub_plot = plt.plot(angles, stub_efficiencies, linestyle='None', marker='o', color='darkgreen', label="Stubs")
   fit_plot_pos = plt.plot(np.linspace(-6, 35, 10000), np.array(fit_func(np.linspace(-6, 35, 10000), *params_pos))*100, linestyle='-', linewidth=2.5, color='darkgreen')
@@ -98,7 +82,7 @@ def main():
   plt.ylabel("Efficiency (%)")
   plt.legend(loc="center left")
   plt.grid()
-  plt.savefig("./plots/AngularScan_Efficiency_"+campaign+".png")
+  plt.savefig("./plots/AngularScan_Efficiency_"+campaign+".pdf")
 
 if __name__ == "__main__":
   sys.exit(main())
