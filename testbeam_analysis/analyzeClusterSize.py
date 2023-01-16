@@ -41,10 +41,10 @@ def main():
     psp_mean_cluster_size_list.append(psp_mean_cluster_size)
     pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
-  psp_plot = plt.plot(angle_list, psp_mean_cluster_size_list, linestyle='None', marker='o', color='darkred', label='PS-p')  
-  pss_plot = plt.plot(angle_list, pss_mean_cluster_size_list, linestyle='None', marker='o', color='navy', label='PS-s')  
+  psp_plot = plt.plot(angle_list, psp_mean_cluster_size_list, linestyle='solid', linewidth=2, marker='o', color='darkred', label='PS-p (threshold = 10 DAC)')  
+  pss_plot = plt.plot(angle_list, pss_mean_cluster_size_list, linestyle='solid', linewidth=2, marker='o', color='navy', label='PS-s (threshold = 25 DAC)')  
 
-  plt.xticks(np.arange(-40, 40, 5))
+  plt.xticks(np.arange(-40, 40, 10))
   plt.xlim([-40, 40])
   plt.xlabel("Angle (degrees)")
   plt.ylabel("Mean Cluster Size")

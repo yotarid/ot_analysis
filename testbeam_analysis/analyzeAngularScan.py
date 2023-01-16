@@ -91,7 +91,7 @@ def main():
   stub_plot = plt.plot(angles, stub_efficiencies, linestyle='None', marker='o', color='darkgreen', label="Stubs")
   fit_plot_pos = plt.plot(np.linspace(-6, 35, 10000), np.array(fit_func(np.linspace(-6, 35, 10000), *params_pos))*100, linestyle='-', linewidth=2.5, color='darkgreen')
   fit_plot_neg = plt.plot(np.linspace(-1, -35, 10000), np.array(fit_func(np.linspace(-1, -35, 10000), *params_neg))*100, linestyle='-', linewidth=2.5, color='darkgreen')
-  plt.xticks(np.arange(-40, 40, 5))
+  plt.xticks(np.arange(-40, 40, 10))
   plt.xlim([-40, 40])
   plt.ylim([0, 105])
   plt.xlabel("Angle (degrees)")
