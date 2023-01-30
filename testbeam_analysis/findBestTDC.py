@@ -37,31 +37,27 @@ def main():
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
 
-    best_mean_efficiency, best_tdc = -1, -1
+    best_tdc = []
     for tdc in range(0,9):
        psp_efficiency = psp_efficiency_vs_tdc.GetBinContent(tdc)
        pss_efficiency = pss_efficiency_vs_tdc.GetBinContent(tdc)
        stub_efficiency = stub_efficiency_vs_tdc.GetBinContent(tdc)
 
-       mean_efficiency = stat.mean([psp_efficiency, pss_efficiency, stub_efficiency])
-       if mean_efficiency >= best_mean_efficiency:
-         best_mean_efficiency = mean_efficiency
-         best_tdc = tdc - 1
-    run_number_list.append(run_number)
-    best_tdc_list.append(best_tdc)
+       if psp_efficiency >= 0.95 and pss_efficiency >= 0.95:
+         best_tdc.append(tdc - 1)
 
     print(f'Run Number = {run_number} ; Best TDC = {best_tdc}')
     print(f'')
 
-  best_tdc_plot = plt.plot(run_number_list, best_tdc_list, linestyle='None', marker='d', color='darkred', label="Best TDC")
-  #plt.xlim([5214, 5331])
-  plt.ylim([-0.5, 8])
-  plt.xlabel("Run Number")
-  plt.ylabel("Best TDC")
-  plt.grid()
-  plt.xticks(rotation=90, fontsize=5)
+  #best_tdc_plot = plt.plot(run_number_list, best_tdc_list, linestyle='None', marker='d', color='darkred', label="Best TDC")
+  ##plt.xlim([5214, 5331])
+  #plt.ylim([-0.5, 8])
+  #plt.xlabel("Run Number")
+  #plt.ylabel("Best TDC")
+  #plt.grid()
+  #plt.xticks(rotation=90, fontsize=5)
 
-  plt.savefig("./plots/BestTDC_"+campaign+".pdf")
+  #plt.savefig("./plots/BestTDC_"+campaign+".pdf")
 
 if __name__ == "__main__":
   sys.exit(main())
