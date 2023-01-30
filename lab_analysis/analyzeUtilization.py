@@ -29,14 +29,14 @@ def main():
     block_rams_list.append(block_rams)
 
 
-  plt.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='navy', label='LUTs')
-  plt.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='darkred', label='FFs')
-  plt.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkgreen', label='BRAMs')
+  plot_lut = plt.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='navy', label='LUTs', zorder=3)
+  plot_ff = plt.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='darkred', label='FFs', zorder=3)
+  plot_ram = plt.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkgreen', label='BRAMs', zorder=3)
 
   plt.ylim([0, 100])
   plt.ylabel("Resource Utilization (%)")
   plt.xticks(np.linspace(1.5,5.5,3), firmware_list)
-  plt.grid()
+  grid = plt.grid(zorder=0)
 
   plt.legend(loc="upper right")
   plt.savefig("./plots/Resource_Utilization.pdf")
