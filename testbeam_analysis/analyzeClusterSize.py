@@ -13,22 +13,36 @@ def parseCSV(file_path):
   csv_file = open(file_path, mode='r') 
   return csv.DictReader(csv_file)
 
-def get_cluster_size_yfit(angle_list, cluster_size_list, yfit_range):
+def get_fit_dict(angle_list, cluster_size_list):
   xMin = -60.
   xMax = 60.
   convGaus = TF1("convGaus","1./TMath::Sqrt(2.*TMath::Pi())/[0]*exp(-0.5*x*x/([0]*[0]))", xMin, xMax)
   clustersizeOpt = TF1("clustersizeOpt","[0]+[1]/0.09*abs(tan((x-[2])*TMath::Pi()/180.))",xMin,xMax)
   clustersizeFuncConv = TF1Convolution(clustersizeOpt, convGaus, xMin, xMax, True)
 
-  fit_func = TF1("psp_fit_func", clustersizeFuncConv, xMin,xMax, clustersizeFuncConv.GetNpar())
+  fit_func = TF1("fit_func", clustersizeFuncConv, xMin,xMax, clustersizeFuncConv.GetNpar())
   fit_func.SetParameter(0,1.)
   fit_func.SetParameter(1,0.28)
   fit_func.SetParameter(2,0.)
   fit_func.SetParameter(3,4.)
   graph = TGraph(len(angle_list), np.array(angle_list), np.array(cluster_size_list))
   graph.Fit(fit_func)
-  yfit = [fit_func(x) for x in np.linspace(yfit_range[0], yfit_range[1], yfit_range[2])]
-  return yfit
+  param_s0 = fit_func.GetParameter(0)
+  param_eta = fit_func.GetParameter(1)
+  param_theta0 = fit_func.GetParameter(2)
+  param_sigma = fit_func.GetParameter(3)
+  xfit = np.linspace(-35, 35, 100000)
+  yfit = [fit_func(x) for x in np.linspace(-35, 35, 100000)]
+
+  fit_dict = {
+      "s0" : param_s0,
+      "eta" : param_eta,
+      "theta0" : param_theta0,
+      "sigma" : param_sigma,
+      "xfit" : xfit,
+      "yfit" : yfit
+  }
+  return fit_dict
 
 def main():
   parser = argparse.ArgumentParser(description="angular scan")
@@ -58,11 +72,27 @@ def main():
     psp_mean_cluster_size_list.append(psp_mean_cluster_size)
     pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
+  psp_fit_dict = get_fit_dict(angle_list, psp_mean_cluster_size_list)
+  psp_param_s0 = psp_fit_dict["s0"]
+  psp_param_eta = psp_fit_dict["eta"]
+  psp_param_theta0 = psp_fit_dict["theta0"]
+  psp_param_sigma = psp_fit_dict["sigma"]
+  psp_xfit = psp_fit_dict["xfit"]
+  psp_yfit = psp_fit_dict["yfit"]
+
+  pss_fit_dict = get_fit_dict(angle_list, pss_mean_cluster_size_list)
+  pss_param_s0 = pss_fit_dict["s0"]
+  pss_param_eta = pss_fit_dict["eta"]
+  pss_param_theta0 = pss_fit_dict["theta0"]
+  pss_param_sigma = pss_fit_dict["sigma"]
+  pss_xfit = pss_fit_dict["xfit"]
+  pss_yfit = pss_fit_dict["yfit"]
+
   psp_plot = plt.plot(angle_list, psp_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o', color='darkred', label='PS-p (threshold = 10 DAC)')  
-  psp_fit_plot = plt.plot(np.linspace(-35, 35, 100000), get_cluster_size_yfit(angle_list, psp_mean_cluster_size_list, [-35, 35, 100000]), linestyle='-', linewidth=2.5, color='darkred')
+  psp_fit_plot = plt.plot(psp_xfit, psp_yfit, linestyle='-', linewidth=2.5, color='darkred')
 
   pss_plot = plt.plot(angle_list, pss_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o', color='navy', label='PS-s (threshold = 25 DAC)')  
-  pss_fit_plot = plt.plot(np.linspace(-35, 35, 100000), get_cluster_size_yfit(angle_list, pss_mean_cluster_size_list, [-35, 35, 100000]), linestyle='-', linewidth=2.5, color='navy')
+  pss_fit_plot = plt.plot(pss_xfit, pss_yfit, linestyle='-', linewidth=2.5, color='navy')
 
   plt.xticks(np.arange(-40, 40, 10))
   plt.xlim([-40, 40])
