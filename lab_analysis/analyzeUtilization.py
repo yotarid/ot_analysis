@@ -39,7 +39,7 @@ def main():
   plt.grid(zorder=0)
 
   plt.legend(loc="upper right")
-  plt.savefig("./plots/Resource_Utilization.pdf")
+  plt.savefig("./plots/resource_utilization.pdf")
     
 
 if __name__ == "__main__":

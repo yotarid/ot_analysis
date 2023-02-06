@@ -35,7 +35,7 @@ plt.legend(handles = [R_plot, Tx_plot, Ty_plot], labels=["R = rotation", r"Tx = 
 plt.grid()
 plt.tight_layout()
 # plt.show()
-plt.savefig("./plots/" + "Metrology.pdf")
+plt.savefig("./plots/" + "metrology.pdf")
  
 
 

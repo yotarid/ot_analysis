@@ -33,18 +33,18 @@ def main():
     stage, chip, pede_file_path = line["stage"], line["chip"], line["file"]
     if chip == "ssa":
       if stage == "pre-trim":
-        f_ssa_pre_trim = TFile.Open(f'{pede_file_path}/Hybrid.root', 'READ')
+        f_ssa_pre_trim = TFile.Open(f'results/{pede_file_path}/Hybrid.root', 'READ')
         h_ssa_pre_trim = f_ssa_pre_trim.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/SSA_{ssa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_ChannelPedestalDistribution_Chip({ssa_id})')
       else:
-        f_ssa_post_trim = TFile.Open(f'{pede_file_path}/Hybrid.root', 'READ')
+        f_ssa_post_trim = TFile.Open(f'results/{pede_file_path}/Hybrid.root', 'READ')
         h_ssa_post_trim = f_ssa_post_trim.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/SSA_{ssa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_ChannelPedestalDistribution_Chip({ssa_id})')
 
     else:
       if stage == "pre-trim":
-        f_mpa_pre_trim = TFile.Open(f'{pede_file_path}/Hybrid.root', 'READ')
+        f_mpa_pre_trim = TFile.Open(f'results/{pede_file_path}/Hybrid.root', 'READ')
         h_mpa_pre_trim = f_mpa_pre_trim.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/MPA_{mpa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_ChannelPedestalDistribution_Chip({mpa_id})')
       else:
-        f_mpa_post_trim = TFile.Open(f'{pede_file_path}/Hybrid.root', 'READ')
+        f_mpa_post_trim = TFile.Open(f'results/{pede_file_path}/Hybrid.root', 'READ')
         h_mpa_post_trim = f_mpa_post_trim.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/MPA_{mpa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_ChannelPedestalDistribution_Chip({mpa_id})')
 
   pre_trim_ssa_ch, post_trim_ssa_ch, pre_trim_mpa_ch, post_trim_mpa_ch = h_ssa_pre_trim.GetBinContent(100), h_ssa_post_trim.GetBinContent(100), h_mpa_pre_trim.GetBinContent(100), h_mpa_post_trim.GetBinContent(100),
@@ -64,8 +64,8 @@ def main():
     y_mpa_post_trim.append(h_mpa_post_trim.GetBinContent(ch_id))
 
   plt.figure(1)
-  plt.plot(x_ssa, y_ssa_pre_trim, linestyle='None', marker='x', markersize=5, color='red', label='pre-trim')
-  plt.plot(x_ssa, y_ssa_post_trim, linestyle='None', marker='*', markersize=5, color='green', label='post-trim')
+  plt.plot(x_ssa, y_ssa_pre_trim, linestyle='None', marker='x', markersize=5, color='darkred', label='pre-equalization')
+  plt.plot(x_ssa, y_ssa_post_trim, linestyle='None', marker='*', markersize=5, color='darkgreen', label='post-equalization')
   #plt.ylim(50,100)
   plt.ylim(50,100)
   plt.xlabel('Channel Number')
@@ -74,11 +74,11 @@ def main():
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/PedestalEqualization_SSA.pdf")
+  plt.savefig("./plots/pedestal_equalization_ssa.pdf")
 
   plt.figure(2)
-  plt.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=4, color='red', label='pre-trim')
-  plt.plot(x_mpa, y_mpa_post_trim, linestyle='None', marker='*', markersize=4, color='green', label='post-trim')
+  plt.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=4, color='darkred', label='pre-equalization')
+  plt.plot(x_mpa, y_mpa_post_trim, linestyle='None', marker='*', markersize=4, color='darkgreen', label='post-equalization')
   #plt.ylim(150,275)
   plt.ylim(150,270)
   plt.xlabel('Channel Number')
@@ -87,7 +87,7 @@ def main():
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/PedestalEqualization_MPA.pdf")
+  plt.savefig("./plots/pedestal_equalization_mpa.pdf")
         
 if __name__ == "__main__":
   sys.exit(main())

@@ -48,7 +48,7 @@ def main():
   plt.legend(loc="center right")
   plt.grid(zorder=0)
 
-  plt.savefig("./plots/IV_Measurement.pdf")
+  plt.savefig("./plots/iv_measurement.pdf")
         
 if __name__ == "__main__":
   sys.exit(main())

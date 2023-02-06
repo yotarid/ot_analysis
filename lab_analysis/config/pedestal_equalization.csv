@@ -1,5 +1,5 @@
 stage,chip,file
-pre-trim,ssa,results/OT_ModuleTest_SSA_NoTrim
-post-trim,ssa,results/OT_ModuleTest_SSA_Trim
-pre-trim,mpa,results/OT_ModuleTest_MPA_NoTrim
-post-trim,mpa,results/OT_ModuleTest_MPA_Trim
+pre-trim,ssa,OT_ModuleTest_SSA_NoTrim
+post-trim,ssa,OT_ModuleTest_SSA_Trim
+pre-trim,mpa,OT_ModuleTest_MPA_NoTrim
+post-trim,mpa,OT_ModuleTest_MPA_Trim

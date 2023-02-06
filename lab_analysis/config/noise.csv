@@ -1,0 +1,4 @@
+stage,folder
+pre-assembly,OT_ModuleTest_Dobby_SkeletonTest
+pre-encapsulation,OT_ModuleTest_Dobby_300V_Noise_NoEncap
+post-encapsulation,OT_ModuleTest_Dobby_300V_Noise_Encap
