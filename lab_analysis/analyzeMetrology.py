@@ -32,10 +32,10 @@ ax2.plot([0, 6], [100, 100], linestyle='dashed', marker='None', color="darkblue"
 plt.text(0+0.05, 100+2, "Tolerance on Ty", color="darkblue")
 
 plt.legend(handles = [R_plot, Tx_plot, Ty_plot], labels=["R = rotation", r"Tx = translation $\perp$ to strips", r"Ty = translation $\parallel$ to strips"], loc="upper right", fontsize=10)
-plt.grid()
+plt.grid(alpha=0.5)
 plt.tight_layout()
 # plt.show()
-plt.savefig("./plots/" + "metrology.pdf")
+plt.savefig("./plots/" + "metrology.pdf", bbox_inches="tight")
  
 
 

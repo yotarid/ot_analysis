@@ -46,9 +46,9 @@ def main():
   plt.ylabel("Current (A)")
   #plt.ticklabel_format(axis='both', style='sci')
   plt.legend(loc="center right")
-  plt.grid(zorder=0)
+  plt.grid(zorder=0, alpha=0.5)
 
-  plt.savefig("./plots/iv_measurement.pdf")
+  plt.savefig("./plots/iv_measurement.pdf", bbox_inches="tight")
         
 if __name__ == "__main__":
   sys.exit(main())

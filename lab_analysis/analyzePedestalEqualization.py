@@ -70,11 +70,11 @@ def main():
   plt.ylim(50,100)
   plt.xlabel('Channel Number')
   plt.ylabel('Amplitude (ThDAC)')
-  plt.grid()
+  plt.grid(alpha=0.5)
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_ssa.pdf")
+  plt.savefig("./plots/pedestal_equalization_ssa.pdf", bbox_inches="tight")
 
   plt.figure(2)
   plt.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=4, color='darkred', label='pre-equalization')
@@ -83,11 +83,11 @@ def main():
   plt.ylim(150,270)
   plt.xlabel('Channel Number')
   plt.ylabel('Amplitude (ThDAC)')
-  plt.grid()
+  plt.grid(alpha=0.5)
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_mpa.pdf")
+  plt.savefig("./plots/pedestal_equalization_mpa.pdf", bbox_inches="tight")
         
 if __name__ == "__main__":
   sys.exit(main())

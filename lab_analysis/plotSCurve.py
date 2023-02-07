@@ -52,16 +52,14 @@ def main():
       y_ssa.append(h_ssa.GetBinContent(ch_id, th))
     
     fit_param, cov = optimize.curve_fit(fit_func, np.array(x_ssa), np.array(y_ssa), p0=[77, 6], maxfev=10000)
-    #fit_plot = plt.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1, color='navy')
     fit_plot = plt.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1)
-    #plt.plot(x_ssa, y_ssa, linestyle='None', marker='o', markersize=1, color='navy')
     plt.plot(x_ssa, y_ssa, linestyle='None', marker='o', markersize=1)
     plt.xlim(50,100)
 
   plt.xlabel('Threshold (ThDAC)')
   plt.ylabel('Occupancy')
   plt.grid()
-  plt.savefig("./plots/scurve_ssa.pdf")
+  plt.savefig("./plots/scurve_ssa.pdf", bbox_inches="tight")
 
   #for mpa
   plt.figure(2)
@@ -82,7 +80,7 @@ def main():
   plt.xlabel('Threshold (ThDAC)')
   plt.ylabel('Occupancy')
   plt.grid()
-  plt.savefig("./plots/scurve_mpa.pdf")
+  plt.savefig("./plots/scurve_mpa.pdf", bbox_inches="tight")
 
        
 if __name__ == "__main__":

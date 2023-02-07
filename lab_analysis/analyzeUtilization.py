@@ -29,17 +29,17 @@ def main():
     block_rams_list.append(block_rams)
 
 
-  plot_lut = plt.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='steelblue', label='LUTs', zorder=3)
-  plot_ff = plt.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='slategrey', label='FFs', zorder=3)
-  plot_ram = plt.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', label='BRAMs', zorder=3)
+  plot_lut = plt.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='steelblue', alpha=1, label='LUTs', zorder=3)
+  plot_ff = plt.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='slategrey', alpha=1, label='FFs', zorder=3)
+  plot_ram = plt.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', alpha=1, label='BRAMs', zorder=3)
 
   plt.ylim([0, 100])
-  plt.ylabel("Resource Utilization (%)", fontname="Times")
-  plt.xticks(np.linspace(1.5,5.5,3), firmware_list, fontname="Times")
-  plt.grid(zorder=0)
+  plt.ylabel("Resource Utilization (%)")
+  plt.xticks(np.linspace(1.5,5.5,3), firmware_list)
+  plt.grid(zorder=0, alpha=0.5)
 
   plt.legend(loc="upper right")
-  plt.savefig("./plots/resource_utilization.pdf")
+  plt.savefig("./plots/resource_utilization.pdf", bbox_inches="tight")
     
 
 if __name__ == "__main__":
