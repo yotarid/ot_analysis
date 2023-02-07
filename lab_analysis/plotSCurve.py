@@ -50,12 +50,12 @@ def main():
       if th < 55: continue
       x_ssa.append(th) 
       y_ssa.append(h_ssa.GetBinContent(ch_id, th))
-    
     fit_param, cov = optimize.curve_fit(fit_func, np.array(x_ssa), np.array(y_ssa), p0=[77, 6], maxfev=10000)
-    fit_plot = plt.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1)
-    plt.plot(x_ssa, y_ssa, linestyle='None', marker='o', markersize=1)
-    plt.xlim(50,100)
+    fit_plot = plt.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param)*100 for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1)
+    plt.plot(x_ssa, np.array(y_ssa)*100, linestyle='None', marker='o', markersize=1)
 
+  plt.xlim(50,110)
+  plt.ylim(0,105)
   plt.xlabel('Threshold (ThDAC)')
   plt.ylabel('Occupancy')
   plt.grid()
@@ -67,16 +67,17 @@ def main():
   #for ch_id in range(1, 2):
     x_mpa, y_mpa = [], []
     for th in range(1, h_mpa.GetNbinsY()):
-      if th < 175: continue
+      if th < 160: continue
       x_mpa.append(th) 
       y_mpa.append(h_mpa.GetBinContent(ch_id, th))
     fit_param, cov = optimize.curve_fit(fit_func, np.array(x_mpa), np.array(y_mpa), p0=[200, 3], maxfev=10000)
     #fit_plot = plt.plot(np.linspace(min(x_mpa), max(x_mpa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_mpa), max(x_mpa), 10000)], linestyle='-', linewidth=1, color='navy')
-    fit_plot = plt.plot(np.linspace(min(x_mpa), max(x_mpa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_mpa), max(x_mpa), 10000)], linestyle='-', linewidth=1)
+    fit_plot = plt.plot(np.linspace(min(x_mpa), max(x_mpa), 10000), [fit_func(x, *fit_param)*100 for x in np.linspace(min(x_mpa), max(x_mpa), 10000)], linestyle='-', linewidth=1)
     #plt.plot(x_mpa, y_mpa, linestyle='None', marker='o', markersize=1, color='navy')
-    plt.plot(x_mpa, y_mpa, linestyle='None', marker='o', markersize=1)
+    plt.plot(x_mpa, np.array(y_mpa)*100, linestyle='None', marker='o', markersize=1)
 
-  plt.xlim(185,220)
+  plt.xlim(175,240)
+  plt.ylim(0,105)
   plt.xlabel('Threshold (ThDAC)')
   plt.ylabel('Occupancy')
   plt.grid()

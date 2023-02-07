@@ -74,7 +74,8 @@ def main():
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_ssa.pdf", bbox_inches="tight")
+  #plt.savefig("./plots/pedestal_equalization_ssa.pdf", bbox_inches="tight")
+  plt.savefig("./plots/pedestal_equalization_ssa.pdf")
 
   plt.figure(2)
   plt.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=4, color='darkred', label='pre-equalization')
@@ -87,7 +88,8 @@ def main():
   legend = plt.legend(loc='upper right')
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_mpa.pdf", bbox_inches="tight")
+  #plt.savefig("./plots/pedestal_equalization_mpa.pdf", bbox_inches="tight")
+  plt.savefig("./plots/pedestal_equalization_mpa.pdf")
         
 if __name__ == "__main__":
   sys.exit(main())

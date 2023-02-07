@@ -39,9 +39,9 @@ def main():
         module_i_list.append(current)
         module_v_list.append(voltage)
     
-  plt.plot(psp_v_list, psp_i_list, linestyle='-', marker='o', markersize=5, color="darkred", label="PS-p")    
-  plt.plot(pss_v_list, pss_i_list, linestyle='-', marker='o', markersize=5, color="navy", label="PS-s")    
-  plt.plot(module_v_list, module_i_list, linestyle='-', marker='o', markersize=5, color="black", label="PS module")    
+  plt.plot(psp_v_list, psp_i_list, linestyle='-', marker='o', markersize=3, color="darkred", label="PS-p")    
+  plt.plot(pss_v_list, pss_i_list, linestyle='-', marker='o', markersize=3, color="navy", label="PS-s")    
+  plt.plot(module_v_list, module_i_list, linestyle='-', marker='o', markersize=3, color="black", label="PS module")    
   plt.xlabel("Voltage (V)")
   plt.ylabel("Current (A)")
   #plt.ticklabel_format(axis='both', style='sci')

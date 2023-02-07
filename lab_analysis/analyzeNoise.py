@@ -73,27 +73,43 @@ def main():
             fit_param, cov = optimize.curve_fit(fit_func, np.array(x_array), np.array(y_array), p0=[200, 3], maxfev=10000)
             mpa_noise_array[stage].append(fit_param[1])
   
-  plt.figure(1)
-  plt.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='skeleton', zorder=3)
-  plt.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
-  plt.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
-  plt.xlabel('Channel Noise (ThDAC)')
-  plt.ylabel('Entries')
-  plt.grid(zorder=0, alpha=0.5)
-  plt.xlim(0,8)
-  plt.legend(loc='upper right')
-  plt.savefig("./plots/noise_ssa.pdf", bbox_inches="tight")
+  ssa_thdac, mpa_thdac = 250, 94
+
+  #ssa
+  fig1, ax11 = plt.subplots()
+  ax12 = ax11.twiny()
+  ax12.set_xlabel(r"Channel Noise ($e^{-}$)")
+  ax12.set_xlim(0,8*ssa_thdac)
+
+  ax11.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='skeleton', zorder=3)
+  ax11.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
+  ax11.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
+  ax11.set_xlabel('Channel Noise (ThDAC)')
+  ax11.set_ylabel('Entries')
+  ax11.grid(zorder=0, alpha=0.5)
+  ax11.set_xlim(0,8)
+  ax11.legend(loc='upper right')
+  #plt.savefig("./plots/noise_ssa.pdf", bbox_inches="tight")
+  plt.savefig("./plots/noise_ssa.pdf")
 
   plt.figure(2)
-  plt.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='MaPSA', zorder=3)
-  plt.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
-  plt.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
-  plt.xlabel('Channel Noise (ThDAC)')
-  plt.ylabel('Entries')
-  plt.grid(zorder=0, alpha=0.5)
-  plt.xlim(0,5)
-  plt.legend(loc='upper right')
-  plt.savefig("./plots/noise_mpa.pdf", bbox_inches="tight")
+  #mpa
+  fig2, ax21 = plt.subplots()
+  ax22 = ax21.twiny()
+  ax22.set_xlabel(r"Channel Noise ($e^{-}$)")
+  ax22.set_xlim(0,5*mpa_thdac)
+
+
+  ax21.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='MaPSA', zorder=3)
+  ax21.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
+  ax21.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
+  ax21.set_xlabel('Channel Noise (ThDAC)')
+  ax21.set_ylabel('Entries')
+  ax21.grid(zorder=0, alpha=0.5)
+  ax21.set_xlim(0,5)
+  ax21.legend(loc='upper right')
+  #plt.savefig("./plots/noise_mpa.pdf", bbox_inches="tight")
+  plt.savefig("./plots/noise_mpa.pdf")
        
 if __name__ == "__main__":
   sys.exit(main())
