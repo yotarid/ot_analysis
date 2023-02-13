@@ -57,7 +57,7 @@ def main():
   plt.xlim(50,110)
   plt.ylim(0,105)
   plt.xlabel('Threshold (ThDAC)')
-  plt.ylabel('Occupancy')
+  plt.ylabel('Efficiency (%)')
   plt.grid()
   plt.savefig("./plots/scurve_ssa.pdf", bbox_inches="tight")
 
@@ -79,7 +79,7 @@ def main():
   plt.xlim(175,240)
   plt.ylim(0,105)
   plt.xlabel('Threshold (ThDAC)')
-  plt.ylabel('Occupancy')
+  plt.ylabel('Efficiency (%)')
   plt.grid()
   plt.savefig("./plots/scurve_mpa.pdf", bbox_inches="tight")
 

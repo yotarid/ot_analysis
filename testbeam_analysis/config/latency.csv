@@ -1,0 +1,4 @@
+data,mode,folder
+stub,none,LatencyScan/OT_ModuleTest_LatencyScans_Run158
+mpa,edge,L1LatencyScan_Edge
+ssa,level,L1LatencyScan_Level
