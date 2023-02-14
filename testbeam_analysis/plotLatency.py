@@ -1,4 +1,4 @@
-from ROOT import TFile, TH1F
+from ROOT import TFile, TH1F, TCanvas, gStyle
 import csv, argparse, sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,46 +46,56 @@ def main():
         f_level = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
         h_mpa_level = f_level.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/D_B({board_id})_O({optical_group_id})_LatencyValueS0_Hybrid({hybrid_id})')
         h_ssa_level = f_level.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/D_B({board_id})_O({optical_group_id})_LatencyValueS1_Hybrid({hybrid_id})')
-  #stubs 
-  for x in range(1, h_stub.GetNbinsX()):
-    stub_latency_values.append(h_stub.GetBinLowEdge(x))
-    stub_latency_entries.append(h_stub.GetBinContent(x))
+  
+  canvas = TCanvas()
+  h_mpa_edge.Draw('hist;')
+  h_mpa_edge.SetLineColor(5)
+  h_ssa_edge.Draw('hist;same')
+  h_ssa_edge.SetLineColor(6)
+  gStyle.SetOptStat(0)
+  canvas.Print("./plots/canvas.pdf")
 
-  #edge
-  for x in range(1, h_mpa_edge.GetNbinsX()):
-    mpa_latency_values.append(int(h_mpa_edge.GetBinLowEdge(x)))
-    mpa_latency_entries_edge.append(h_mpa_edge.GetBinContent(x))
-    ssa_latency_entries_edge.append(h_ssa_edge.GetBinContent(x))
+  ##stubs 
+  #for x in range(1, h_stub.GetNbinsX()):
+  #  stub_latency_values.append(h_stub.GetBinLowEdge(x))
+  #  stub_latency_entries.append(h_stub.GetBinContent(x))
 
-  #level
-  for x in range(1, h_mpa_level.GetNbinsX()):
-    #mpa_latency_values.append(x)
-    mpa_latency_entries_level.append(h_mpa_level.GetBinContent(x))
-    ssa_latency_entries_level.append(h_ssa_level.GetBinContent(x))
+  ##edge
+  #for x in range(1, h_mpa_edge.GetNbinsX()):
+  #  mpa_latency_values.append(int(h_mpa_edge.GetBinLowEdge(x)))
+  #  mpa_latency_entries_edge.append(h_mpa_edge.GetBinContent(x))
+  #  ssa_latency_entries_edge.append(h_ssa_edge.GetBinContent(x))
 
-  fig = plt.figure(1)
-  axes = fig.gca()
-  nbins = int(max(mpa_latency_values) - min(mpa_latency_values) + 1)
-  #plt.hist(stub_latency_values, weights=stub_latency_entries, histtype='step', color='darkgreen', linewidth=2, label='Stub Latency', zorder=3)
-  plt.hist(mpa_latency_values, weights=mpa_latency_entries_level, bins=nbins, histtype='step', color='darkred', linewidth=2, fill=True, alpha=0.5, label='Edge', zorder=3)
-  plt.hist(mpa_latency_values, weights=mpa_latency_entries_edge, bins=nbins, histtype='step', color='darkred', linewidth=2, hatch='/', label='Level', zorder=3)
-  axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
-  plt.grid(zorder=0, alpha=0.5)
-  plt.xlabel("Latency (BX cycles)")
-  plt.ylabel("Entries")
-  plt.legend(loc='upper right')
-  plt.savefig("./plots/mpa_latency.pdf", bbox_inches="tight")
+  ##level
+  #for x in range(1, h_mpa_level.GetNbinsX()):
+  #  #mpa_latency_values.append(x)
+  #  mpa_latency_entries_level.append(h_mpa_level.GetBinContent(x))
+  #  ssa_latency_entries_level.append(h_ssa_level.GetBinContent(x))
 
-  fig = plt.figure(2)
-  axes = fig.gca()
-  plt.hist(mpa_latency_values, weights=ssa_latency_entries_edge, bins=nbins, histtype='step', color='navy', linewidth=2, fill=True, alpha=0.5, label='Edge', zorder=3)
-  plt.hist(mpa_latency_values, weights=ssa_latency_entries_level, bins=nbins, histtype='step', color='navy', linewidth=2, hatch='/', label='Level', zorder=3)
-  axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
-  plt.grid(zorder=0, alpha=0.5)
-  plt.xlabel("Latency (BX cycles)")
-  plt.ylabel("Entries")
-  plt.legend(loc='upper right')
-  plt.savefig("./plots/ssa_latency.pdf", bbox_inches="tight")
+  #fig = plt.figure(1)
+  #axes = fig.gca()
+  #nbins = int(max(mpa_latency_values) - min(mpa_latency_values) + 1)
+  ##plt.hist(stub_latency_values, weights=stub_latency_entries, histtype='step', color='darkgreen', linewidth=2, label='Stub Latency', zorder=3)
+  ##plt.hist(mpa_latency_values, weights=mpa_latency_entries_level, bins=nbins, histtype='step', color='darkred', linewidth=2, fill=True, alpha=0.5, label='Edge', zorder=3)
+  #plt.hist(mpa_latency_values, weights=mpa_latency_entries_edge, bins=nbins, histtype='step', color='darkred', linewidth=2, fill=True, alpha=0.5, label='MPA', zorder=3)
+  #plt.hist(mpa_latency_values, weights=ssa_latency_entries_edge, bins=nbins, histtype='step', color='navy', linewidth=2, fill=True, alpha=0.5, label='SSA', zorder=3)
+  #axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
+  #plt.grid(zorder=0, alpha=0.5)
+  #plt.xlabel("Latency (BX cycles)", fontsize=12)
+  #plt.ylabel("Entries", fontsize=12)
+  #plt.legend(loc='upper right', fontsize=12)
+  #plt.savefig("./plots/latency.pdf", bbox_inches="tight")
+
+  #fig = plt.figure(2)
+  #axes = fig.gca()
+  #plt.hist(mpa_latency_values, weights=ssa_latency_entries_edge, bins=nbins, histtype='step', color='navy', linewidth=2, fill=True, alpha=0.5, label='Edge', zorder=3)
+  #plt.hist(mpa_latency_values, weights=ssa_latency_entries_level, bins=nbins, histtype='step', color='navy', linewidth=2, hatch='/', label='Level', zorder=3)
+  #axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
+  #plt.grid(zorder=0, alpha=0.5)
+  #plt.xlabel("Latency (BX cycles)", fontsize=12)
+  #plt.ylabel("Entries", fontsize=12)
+  #plt.legend(loc='upper right', fontsize=12)
+  #plt.savefig("./plots/ssa_latency.pdf", bbox_inches="tight")
 
   
 if __name__ == "__main__":

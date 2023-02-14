@@ -37,9 +37,9 @@ def main():
     f_noise = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
     if stage == "pre-encapsulation" or stage == "post-encapsulation":
       optical_group_id = 1
-    for hybrid_local_id in range(0, 1):
+    for hybrid_local_id in range(0, 2):
       hybrid_id = 2*optical_group_id + hybrid_local_id
-      for chip_id in range(0, 1):
+      for chip_id in range(0, 8):
         ssa_id, mpa_id = chip_id, chip_id + 8
 
         #for ssa
@@ -84,11 +84,11 @@ def main():
   ax11.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='skeleton', zorder=3)
   ax11.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
   ax11.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
-  ax11.set_xlabel('Channel Noise (ThDAC)')
-  ax11.set_ylabel('Entries')
+  ax11.set_xlabel('Channel Noise (ThDAC)', fontsize=12)
+  ax11.set_ylabel('Entries', fontsize=12)
   ax11.grid(zorder=0, alpha=0.5)
   ax11.set_xlim(0,8)
-  ax11.legend(loc='upper right')
+  ax11.legend(loc='upper right', fontsize=12)
   #plt.savefig("./plots/noise_ssa.pdf", bbox_inches="tight")
   plt.savefig("./plots/noise_ssa.pdf")
 
@@ -103,11 +103,11 @@ def main():
   ax21.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='MaPSA', zorder=3)
   ax21.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='pre-encapsulation', zorder=3)
   ax21.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='post-encapsulation', zorder=3)
-  ax21.set_xlabel('Channel Noise (ThDAC)')
-  ax21.set_ylabel('Entries')
+  ax21.set_xlabel('Channel Noise (ThDAC)', fontsize=12)
+  ax21.set_ylabel('Entries', fontsize=12)
   ax21.grid(zorder=0, alpha=0.5)
   ax21.set_xlim(0,5)
-  ax21.legend(loc='upper right')
+  ax21.legend(loc='upper right', fontsize=12)
   #plt.savefig("./plots/noise_mpa.pdf", bbox_inches="tight")
   plt.savefig("./plots/noise_mpa.pdf")
        
