@@ -12,11 +12,6 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 matplotlib.use('Agg')
 
-NHYBRID = 2
-NCHIP = 8
-NSSACH = 120
-NMPACH = 920
-
 def parseCSV(file_path):
   print('Parsing CSV file : {}'.format(file_path))
   csv_file = open(file_path, mode='r') 
