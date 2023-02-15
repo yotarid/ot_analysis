@@ -4,8 +4,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=16)
-matplotlib.rc('ytick', labelsize=16)
+matplotlib.rc('xtick', labelsize=12)
+matplotlib.rc('ytick', labelsize=12)
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 
@@ -32,17 +32,19 @@ def main():
     flipflops_list.append(flipflops)
     block_rams_list.append(block_rams)
 
+  fix, ax1 = plt.subplots()
+  plot_lut = ax1.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='steelblue', alpha=1, label='LUTs', zorder=3)
+  plot_ff = ax1.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='slategrey', alpha=1, label='FFs', zorder=3)
+  plot_ram = ax1.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', alpha=1, label='BRAMs', zorder=3)
 
-  plot_lut = plt.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='steelblue', alpha=1, label='LUTs', zorder=3)
-  plot_ff = plt.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='slategrey', alpha=1, label='FFs', zorder=3)
-  plot_ram = plt.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', alpha=1, label='BRAMs', zorder=3)
-
-  plt.ylim([0, 100])
-  plt.ylabel("Resource Utilization (%)", fontsize=16)
+  ax1.set_ylim([0, 100])
+  ax1.set_ylabel("Resource Utilization (%)", fontsize=12)
+  ax1.set_box_aspect(1)
   plt.xticks(np.linspace(1.5,5.5,3), firmware_list)
   plt.grid(zorder=0, alpha=0.5)
 
-  plt.legend(loc="upper right", ncol=3, fontsize=16, bbox_to_anchor=(0.975, 1.15))
+  plt.legend(loc="upper right", ncol=3, fontsize=12, bbox_to_anchor=(0.975, 1.12))
+  #plt.legend(loc="upper right", ncol=3, fontsize=12, bbox_to_anchor=(0.1,0.9,0.5,0.1))
   plt.savefig("./plots/resource_utilization.pdf", bbox_inches="tight")
     
 

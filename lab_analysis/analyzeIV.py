@@ -43,13 +43,17 @@ def main():
         module_i_list.append(current)
         module_v_list.append(voltage)
     
-  plt.plot(psp_v_list, psp_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="darkred", label="PS-p")    
-  plt.plot(pss_v_list, pss_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="navy", label="PS-s")    
-  plt.plot(module_v_list, module_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="black", label="PS module")    
-  plt.xlabel("Voltage (V)", fontsize=16)
-  plt.ylabel("Current (A)", fontsize=16)
+    
+  fig, ax = plt.subplots()
+
+  ax.plot(psp_v_list, psp_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="darkred", label="PS-p")    
+  ax.plot(pss_v_list, pss_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="navy", label="PS-s")    
+  ax.plot(module_v_list, module_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="black", label="PS module")    
+  ax.set_xlabel("Voltage (V)", fontsize=16)
+  ax.set_ylabel("Current (A)", fontsize=16)
+  ax.set_box_aspect(1)
   #plt.ticklabel_format(axis='both', style='sci')
-  plt.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.4, 0.87))
+  plt.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.53, 0.87))
   plt.grid(zorder=0, alpha=0.5)
 
   plt.savefig("./plots/iv_measurement.pdf", bbox_inches="tight")
