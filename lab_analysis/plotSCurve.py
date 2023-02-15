@@ -6,6 +6,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
