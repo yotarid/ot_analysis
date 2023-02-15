@@ -1,11 +1,15 @@
 import csv, argparse, sys
-import matplotlib.pyplot as plt
 import numpy as np
 import math
-from matplotlib.ticker import ScalarFormatter
 from scipy import optimize, special
 import matplotlib
+matplotlib.rc('font',family='Times New Roman') 
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
+import matplotlib.pyplot as plt
 matplotlib.use('Agg')
+
+
 
 def parseCSV(file_path):
   print('Parsing CSV file : {}'.format(file_path))
@@ -39,13 +43,13 @@ def main():
         module_i_list.append(current)
         module_v_list.append(voltage)
     
-  plt.plot(psp_v_list, psp_i_list, linestyle='-', marker='o', markersize=3, color="darkred", label="PS-p")    
-  plt.plot(pss_v_list, pss_i_list, linestyle='-', marker='o', markersize=3, color="navy", label="PS-s")    
-  plt.plot(module_v_list, module_i_list, linestyle='-', marker='o', markersize=3, color="black", label="PS module")    
-  plt.xlabel("Voltage (V)", fontsize=12)
-  plt.ylabel("Current (A)", fontsize=12)
+  plt.plot(psp_v_list, psp_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="darkred", label="PS-p")    
+  plt.plot(pss_v_list, pss_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="navy", label="PS-s")    
+  plt.plot(module_v_list, module_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="black", label="PS module")    
+  plt.xlabel("Voltage (V)", fontsize=16)
+  plt.ylabel("Current (A)", fontsize=16)
   #plt.ticklabel_format(axis='both', style='sci')
-  plt.legend(loc="center right", fontsize=12)
+  plt.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.4, 0.87))
   plt.grid(zorder=0, alpha=0.5)
 
   plt.savefig("./plots/iv_measurement.pdf", bbox_inches="tight")

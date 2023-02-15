@@ -1,12 +1,15 @@
 from ROOT import *
 import ROOT
 import csv, argparse, sys
-import matplotlib.pyplot as plt
 import numpy as np
 import math
-from matplotlib.ticker import ScalarFormatter
 from scipy import optimize, special
 import matplotlib
+matplotlib.rc('font',family='Times New Roman') 
+matplotlib.rc('xtick', labelsize=12)
+matplotlib.rc('ytick', labelsize=12)
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 matplotlib.use('Agg')
 
 NHYBRID = 2
@@ -63,33 +66,31 @@ def main():
     y_mpa_pre_trim.append(h_mpa_pre_trim.GetBinContent(ch_id))
     y_mpa_post_trim.append(h_mpa_post_trim.GetBinContent(ch_id))
 
-  plt.figure(1)
-  plt.plot(x_ssa, y_ssa_pre_trim, linestyle='None', marker='x', markersize=5, color='darkred', label='pre-equalization')
-  plt.plot(x_ssa, y_ssa_post_trim, linestyle='None', marker='*', markersize=5, color='darkgreen', label='post-equalization')
-  #plt.ylim(50,100)
-  plt.ylim(50,100)
-  plt.xlabel('Channel Number', fontsize=12)
-  plt.ylabel('Amplitude (ThDAC)', fontsize=12)
-  plt.grid(alpha=0.5)
-  legend = plt.legend(loc='upper right', fontsize=12)
-  legend.legendHandles[0]._legmarker.set_markersize(6)
-  legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_ssa.pdf", bbox_inches="tight")
-  #plt.savefig("./plots/pedestal_equalization_ssa.pdf")
+  #plt.figure(1)
+  fig, (ax1, ax2) = plt.subplots(1,2)
+  plt.tight_layout()
 
-  plt.figure(2)
-  plt.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=4, color='darkred', label='pre-equalization')
-  plt.plot(x_mpa, y_mpa_post_trim, linestyle='None', marker='*', markersize=4, color='darkgreen', label='post-equalization')
-  #plt.ylim(150,275)
-  plt.ylim(150,270)
-  plt.xlabel('Channel Number', fontsize=12)
-  plt.ylabel('Amplitude (ThDAC)', fontsize=12)
-  plt.grid(alpha=0.5)
-  legend = plt.legend(loc='upper right', fontsize=12)
+  ax1.plot(x_ssa, y_ssa_pre_trim, linestyle='None', marker='x', markersize=5, color='darkred', label='Pre-Equalization')
+  ax1.plot(x_ssa, y_ssa_post_trim, linestyle='None', marker='*', markersize=5, color='darkgreen', label='Post-Equalization')
+  #ax1.set_ylim(50,100)
+  ax1.set_xlabel('Channel Number', fontsize=12)
+  ax1.set_ylabel('Amplitude (ThDAC)', fontsize=12)
+  ax1.grid(alpha=0.5)
+  ax1.set_box_aspect(1)
+
+  ax2.plot(x_mpa, y_mpa_pre_trim, linestyle='None', marker='x', markersize=5, color='darkred', label='Pre-Equalization')
+  ax2.plot(x_mpa, y_mpa_post_trim, linestyle='None', marker='*', markersize=5, color='darkgreen', label='Post-Equalization')
+  ax2.set_ylim(150,270)
+  ax2.set_xlabel('Channel Number', fontsize=12)
+  ax2.grid(alpha=0.5)
+  ax2.set_box_aspect(1)
+
+  legend = plt.legend(loc='upper right', ncol=2, columnspacing=0.8, fontsize=12, bbox_to_anchor=(0.51, 1.17), handletextpad=0.)
   legend.legendHandles[0]._legmarker.set_markersize(6)
   legend.legendHandles[1]._legmarker.set_markersize(6)
-  plt.savefig("./plots/pedestal_equalization_mpa.pdf", bbox_inches="tight")
-  #plt.savefig("./plots/pedestal_equalization_mpa.pdf")
+  plt.savefig("./plots/pedestal_equalization.pdf", bbox_inches="tight")
+  #plt.savefig("./plots/pedestal_equalization.pdf")
+
         
 if __name__ == "__main__":
   sys.exit(main())
