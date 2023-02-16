@@ -60,6 +60,7 @@ def main():
   #ax1.set_xlim(117,123)
   ax1.grid(zorder=0, alpha=0.5)
   ax1.set_xlabel("Residuals X ($\mu m$)", fontsize=12)
+  ax1.set_xlim(-150,150)
   ax1.set_ylabel("Entries", fontsize=12)
   #ax1.legend(loc='upper right', fontsize=14)
   ax1.set_box_aspect(1)
@@ -70,6 +71,7 @@ def main():
   ax2.hist(res_x, weights=pss_cnt_final, bins=nbins, histtype='step', color='darkgreen', linewidth=1, fill=False, label='Final Alignment', zorder=3)
   ax2.grid(zorder=0, alpha=0.5)
   ax2.set_xlabel("Residuals X ($\mu m$)", fontsize=12)
+  ax2.set_xlim(-150,150)
   #ax2.set_ylabel("Entries", fontsize=12)
   ax2.set_box_aspect(1)
   
