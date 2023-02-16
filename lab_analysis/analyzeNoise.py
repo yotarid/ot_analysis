@@ -42,9 +42,9 @@ def main():
     f_noise = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
     if stage == "pre-encapsulation" or stage == "post-encapsulation":
       optical_group_id = 1
-    for hybrid_local_id in range(0, 1):
+    for hybrid_local_id in range(0, 2):
       hybrid_id = 2*optical_group_id + hybrid_local_id
-      for chip_id in range(0, 1):
+      for chip_id in range(0, 8):
         ssa_id, mpa_id = chip_id, chip_id + 8
 
         #for ssa
@@ -90,9 +90,9 @@ def main():
   #ax12.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax12.set_box_aspect(1)
 
-  ax11.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='Pre-Assembly', zorder=3)
-  ax11.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='Pre-Encapsulation', zorder=3)
-  ax11.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='Post-Encapsulation', zorder=3)
+  ax11.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=1, label='Pre-Assembly', zorder=3)
+  ax11.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=1, label='Pre-Encapsulation', zorder=3)
+  ax11.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=1, label='Post-Encapsulation', zorder=3)
   ax11.set_xlabel('Channel Noise (ThDAC)', fontsize=12, fontname='Times New Roman')
   ax11.set_ylabel('Entries', fontsize=12, fontname='Times New Roman')
   ax11.grid(zorder=0, alpha=0.5)
@@ -106,9 +106,9 @@ def main():
   #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
 
-  ax21.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=2, label='Pre-Assembly', zorder=3)
-  ax21.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=2, label='Pre-Encapsulation', zorder=3)
-  ax21.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=2, label='Post-Encapsulation', zorder=3)
+  ax21.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=1, label='Pre-Assembly', zorder=3)
+  ax21.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=1, label='Pre-Encapsulation', zorder=3)
+  ax21.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=1, label='Post-Encapsulation', zorder=3)
   ax21.set_xlabel('Channel Noise (ThDAC)', fontsize=12, fontname='Times New Roman')
   ax21.grid(zorder=0, alpha=0.5)
   ax21.set_xlim(0,5)

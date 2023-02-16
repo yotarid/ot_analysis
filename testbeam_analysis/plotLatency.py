@@ -5,8 +5,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=14)
-matplotlib.rc('ytick', labelsize=14)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter, MaxNLocator
@@ -73,14 +73,14 @@ def main():
   nbins = int(max(mpa_latency_values) - min(mpa_latency_values))
   #plt.hist(stub_latency_values, weights=stub_latency_entries, histtype='step', color='darkgreen', linewidth=2, label='Stub Latency', zorder=3)
   #plt.hist(mpa_latency_values, weights=mpa_latency_entries_level, bins=nbins, histtype='step', color='darkred', linewidth=2, fill=True, alpha=0.5, label='Edge', zorder=3)
-  ax.hist(mpa_latency_values, weights=mpa_latency_entries_edge, bins=nbins, histtype='step', color='darkred', linewidth=2, fill=True, alpha=0.5, label='MPA', zorder=3)
-  ax.hist(ssa_latency_values, weights=ssa_latency_entries_edge, bins=nbins, histtype='step', color='navy', linewidth=2, fill=True, alpha=0.5, label='SSA', zorder=3)
+  ax.hist(mpa_latency_values, weights=mpa_latency_entries_edge, bins=nbins, histtype='step', color='darkred', linewidth=1, fill=True, alpha=0.5, label='MPA', zorder=3)
+  ax.hist(ssa_latency_values, weights=ssa_latency_entries_edge, bins=nbins, histtype='step', color='navy', linewidth=1, fill=True, alpha=0.5, label='SSA', zorder=3)
   axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
-  ax.set_xlim(117,123)
+  ax.set_xlim(110,130)
   ax.grid(zorder=0, alpha=0.5)
-  ax.set_xlabel("Latency (BX cycles)", fontsize=14)
-  ax.set_ylabel("Entries", fontsize=14)
-  ax.legend(loc='upper left', fontsize=14)
+  ax.set_xlabel("Latency (BX cycles)", fontsize=16)
+  ax.set_ylabel("Entries", fontsize=16)
+  ax.legend(loc='upper left', fontsize=16)
   ax.set_box_aspect(1)
   plt.savefig("./plots/latency.pdf", bbox_inches="tight")
 
