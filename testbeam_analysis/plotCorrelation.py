@@ -16,14 +16,9 @@ def parseCSV(file_path):
   csv_file = open(file_path, mode='r') 
   return csv.DictReader(csv_file)
 
-def fit_func(x, p0, p1, p2, p3):
-    return 1 - 1/2 * (p0 + p1*special.erf((x-p2)/p3))
-
 def main():
   parser = argparse.ArgumentParser(description="correlation plot")
   parser.add_argument('-file', help="root file")
-  #parser.add_argument('-file', help="CSV file to be parsed")
-  #parser.add_argument('-campaign', help="Beam Test campaign")
 
   args = parser.parse_args()
   result_file = TFile(args.file, 'READ')
