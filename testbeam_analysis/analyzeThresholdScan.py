@@ -86,7 +86,7 @@ def main():
   pss_plot = ax.errorbar(ssa_thresholds, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, color='navy', label='PS-s')
   stub_plot = ax.errorbar(ssa_thresholds, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, color='darkgreen', label='Stubs')
   ax.set_xlabel('Threshold (ThDAC)', fontsize=16)
-  ax.set_ylabel("Efficiency (%)", fontsize=16)
+  ax.set_ylabel("Efficiency", fontsize=16)
   #ax.legend(loc="center left")
   legend = ax.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
   ax.grid(alpha=0.5)

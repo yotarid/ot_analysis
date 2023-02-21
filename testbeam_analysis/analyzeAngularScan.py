@@ -22,6 +22,10 @@ def fit_func(x, p0, p1, p2, p3):
 def calculateError(eff, ntracks):
   return np.sqrt((eff * (1 - eff))/ntracks)
 
+def calculatePt(angle):
+  angle_rad = angle*np.pi/180
+  return 0.57 * 0.259 / np.sin(angle_rad)
+
 def main():
   parser = argparse.ArgumentParser(description="bias scan")
   parser.add_argument('-csv', help="CSV file to be parsed")
@@ -33,11 +37,14 @@ def main():
   run_list = parseCSV(args.csv)
   folder = args.folder
   campaign = args.campaign
-  psp_efficiencies, pss_efficiencies, stub_efficiencies, stub_efficiencies_pos, stub_efficiencies_neg, angles_pos, angles_neg, angles  = [], [], [], [], [], [], [], []
-  psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err = [], [], [] 
+  psp_efficiencies, pss_efficiencies, stub_efficiencies, stub_efficiencies_pos, stub_efficiencies_neg = [], [], [], [], []
+  angles_pos, angles_neg, angles  =  [], [], []
+  pt_momentum  =  []
+  psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err, stub_efficiencies_pos_err, stub_efficiencies_neg_err = [], [], [], [], [] 
 
   for run in run_list:
     run_number, angle = run["RunNumber"], float(run["Angle"])
+    angle = angle - 0.45
     print(f'Run Number : {run_number}, Angle : {angle}')
     #Get result file
     result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule.root', 'READ')
@@ -84,38 +91,50 @@ def main():
     stub_efficiencies_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
     if angle >= 0 :
+      pt_momentum.append(calculatePt(angle))
       angles_pos.append(angle)
       stub_efficiencies_pos.append(max_stub_efficiency)
+      stub_efficiencies_pos_err.append(calculateError(max_stub_efficiency, stub_ntrack))
     else:
       angles_neg.append(angle)
       stub_efficiencies_neg.append(max_stub_efficiency)
+      stub_efficiencies_neg_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
   #params, cov = optimize.curve_fit(fit_func, np.array(angles), np.array(stub_efficiency), p0=[1, 1, 15, 1], maxfev=8000)
   params_pos, cov_pos = optimize.curve_fit(fit_func, np.array(angles_pos), np.array(stub_efficiencies_pos), maxfev=10000)
   params_neg, cov_neg = optimize.curve_fit(fit_func, np.array(angles_neg), np.array(stub_efficiencies_neg), maxfev=10000)
-  print(params_pos, params_neg)
+  
+  params_pt, cov_pt = optimize.curve_fit(fit_func, np.array(pt_momentum), np.array(stub_efficiencies_pos), maxfev=10000)
+  print(params_pos, params_neg, params_pt)
 
-  fig, ax = plt.subplots()
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
-  psp_plot = ax.errorbar(angles, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, color='darkred', label='PS-p')
-  pss_plot = ax.errorbar(angles, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, color='navy', label='PS-s')
-  stub_plot = ax.errorbar(angles, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', marker='o', markersize=5, color='darkgreen', label='Stubs')
-
+  psp_plot = ax1.errorbar(angles, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, color='darkred', label='PS-p')
+  pss_plot = ax1.errorbar(angles, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, color='navy', label='PS-s')
+  stub_plot = ax1.errorbar(angles, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', marker='o', markersize=5, color='darkgreen', label='Stubs')
   fit_plot_pos = plt.plot(np.linspace(-6, 35, 10000), np.array(fit_func(np.linspace(-6, 35, 10000), *params_pos)), linestyle='-', linewidth=1, color='darkgreen')
   fit_plot_neg = plt.plot(np.linspace(-1, -35, 10000), np.array(fit_func(np.linspace(-1, -35, 10000), *params_neg)), linestyle='-', linewidth=1, color='darkgreen')
 
-  #plt.xticks(np.arange(-40, 40, 10))
-  #ax.set_xlim([-40, 40])
-
-  ax.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
-  ax.set_ylabel("Efficiency (%)", fontsize=16)
+  ax1.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
+  ax1.set_ylabel("Efficiency", fontsize=16)
   #ax.legend(loc="center left")
-  legend = ax.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
-  ax.grid(alpha=0.5)
-  ax.set_box_aspect(1)
+  legend = ax1.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  ax1.grid(alpha=0.5)
+  ax1.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
 
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+  pt_plot = ax2.errorbar(pt_momentum, stub_efficiencies_pos, yerr=stub_efficiencies_pos_err, linestyle='None', marker='o', markersize=5, color='darkgreen', label='Stubs')
+  pt_fit_plot = plt.plot(np.linspace(0, int(max(pt_momentum))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum)), 10000), *params_pt)), linestyle='-', linewidth=1, color='darkgreen')
+  ax2.set_xlabel('Transverse Momentum (GeV)', fontsize=16)
+  ax2.set_ylabel("Stub efficiency", fontsize=16)
+  #ax.legend(loc="center left")
+  #legend = ax2.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  ax2.grid(alpha=0.5)
+  ax2.set_box_aspect(1)
+  plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")
 
 if __name__ == "__main__":
   sys.exit(main())
