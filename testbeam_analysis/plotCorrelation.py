@@ -5,8 +5,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=12)
-matplotlib.rc('ytick', labelsize=12)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter, MaxNLocator
@@ -35,23 +35,28 @@ def main():
       pss_ch.append(ps_ch)
       pss_entries.append(pss_corr.GetBinContent(ps_ch, tele_ch))
 
-  fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
   hist1 = ax1.hist2d(psp_ch, telescope_ch, bins=[psp_corr.GetNbinsX(), psp_corr.GetNbinsY()], weights=psp_entries, cmap=plt.cm.jet)
   ax1.set_xlim(620, 850)
-  ax1.set_xlabel("PS-p X", fontsize=12)
-  ax1.set_ylabel("Telescope X", fontsize=12)
+  ax1.set_xlabel("PS-p X", fontsize=16)
+  ax1.set_ylabel("Telescope X", fontsize=16)
   ax1.set_box_aspect(1)
-  fig.colorbar(hist1[3], ax=ax1, location='right', fraction=0.046, pad=0.04)
+  fig1.colorbar(hist1[3], ax=ax1, location='right', fraction=0.046, pad=0.04)
+  plt.savefig("./plots/correlation_psp.pdf", bbox_inches="tight")
+
+
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
 
   hist2 = ax2.hist2d(pss_ch, telescope_ch, bins=[pss_corr.GetNbinsX(), pss_corr.GetNbinsY()], weights=pss_entries, cmap=plt.cm.jet)
   ax2.set_xlim(620, 850)
-  ax2.set_xlabel("PS-s X", fontsize=12)
+  ax2.set_xlabel("PS-s X", fontsize=16)
+  ax2.set_ylabel("Telescope X", fontsize=16)
   ax2.set_box_aspect(1)
-  fig.colorbar(hist2[3], ax=ax2, location='right', fraction=0.046, pad=0.04)
-
-  plt.savefig("./plots/correlation.pdf", bbox_inches="tight")
+  fig2.colorbar(hist2[3], ax=ax2, location='right', fraction=0.046, pad=0.04)
+  plt.savefig("./plots/correlation_pss.pdf", bbox_inches="tight")
 
 if __name__ == "__main__":
   sys.exit(main())

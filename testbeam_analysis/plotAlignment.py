@@ -5,8 +5,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=12)
-matplotlib.rc('ytick', labelsize=12)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter, MaxNLocator
@@ -50,34 +50,32 @@ def main():
     pss_cnt_initial.append(h_pss_initial.GetBinContent(res))
     pss_cnt_final.append(h_pss_final.GetBinContent(res))
 
-  fig, (ax1, ax2) = plt.subplots(1,2)
-  plt.tight_layout()
- 
   nbins =  int(max(res_x) - min(res_x))
 
-  ax1.hist(res_x, weights=psp_cnt_initial, bins=nbins, histtype='step', color='darkred', linewidth=1, fill=False, label='Initial Alignment', zorder=3)
-  ax1.hist(res_x, weights=psp_cnt_final, bins=nbins, histtype='step', color='darkgreen', linewidth=1, fill=False, label='Final Alignment', zorder=3)
-  #ax1.set_xlim(117,123)
+  fig1, ax1 = plt.subplots()
+  plt.tight_layout()
+  ax1.hist(res_x, weights=psp_cnt_initial, bins=nbins, histtype='step', color='darkred', linewidth=1, fill=False, label='Initial', zorder=3)
+  ax1.hist(res_x, weights=psp_cnt_final, bins=nbins, histtype='step', color='darkgreen', linewidth=1, fill=False, label='Final', zorder=3)
   ax1.grid(zorder=0, alpha=0.5)
-  ax1.set_xlabel("Residuals X ($\mathrm{\mu m}$)", fontsize=12)
+  ax1.set_xlabel("Residuals X ($\mathrm{\mu m}$)", fontsize=16)
   ax1.set_xlim(-150,150)
-  ax1.set_ylabel("Entries", fontsize=12)
-  #ax1.legend(loc='upper right', fontsize=14)
+  ax1.set_ylabel("Entries", fontsize=16)
   ax1.set_box_aspect(1)
+  legend = ax1.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.85, 1.15))
+  plt.savefig("./plots/alignment_psp.pdf", bbox_inches="tight")
 
 
-
-  ax2.hist(res_x, weights=pss_cnt_initial, bins=nbins, histtype='step', color='darkred', linewidth=1, fill=False, label='Initial Alignment', zorder=3)
-  ax2.hist(res_x, weights=pss_cnt_final, bins=nbins, histtype='step', color='darkgreen', linewidth=1, fill=False, label='Final Alignment', zorder=3)
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+  ax2.hist(res_x, weights=pss_cnt_initial, bins=nbins, histtype='step', color='darkred', linewidth=1, fill=False, label='Initial', zorder=3)
+  ax2.hist(res_x, weights=pss_cnt_final, bins=nbins, histtype='step', color='darkgreen', linewidth=1, fill=False, label='Final', zorder=3)
   ax2.grid(zorder=0, alpha=0.5)
-  #ax2.set_xlabel("Residuals X ($\mu m$)", fontsize=12)
-  ax2.set_xlabel("Residuals X ($\mathrm{\mu m}$)", fontsize=12)
+  ax2.set_xlabel("Residuals X ($\mathrm{\mu m}$)", fontsize=16)
   ax2.set_xlim(-150,150)
-  #ax2.set_ylabel("Entries", fontsize=12)
+  ax2.set_ylabel("Entries", fontsize=16)
   ax2.set_box_aspect(1)
-  
-  legend = plt.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=12, bbox_to_anchor=(0.6, 1.22))
-  plt.savefig("./plots/alignment.pdf", bbox_inches="tight")
+  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.85, 1.15))
+  plt.savefig("./plots/alignment_pss.pdf", bbox_inches="tight")
 
        
 if __name__ == "__main__":

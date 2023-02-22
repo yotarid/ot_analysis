@@ -5,8 +5,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=12)
-matplotlib.rc('ytick', labelsize=12)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter, MaxNLocator
@@ -49,35 +49,31 @@ def main():
     ntracks_x.append(h_ntracks.GetBinLowEdge(ntracks))
     ntracks_cnt.append(h_ntracks.GetBinContent(ntracks))
 
-  fig, (ax1, ax2) = plt.subplots(1,2)
-  plt.tight_layout(pad=1.5)
-  #plt.tight_layout()
- 
-  chi2_nbins =  int(max(chi2_x) - min(chi2_x))
 
-  #ax1.hist(chi2_x, weights=chi2_cnt_initial, bins=chi2_nbins, density=False, histtype='step', color='darkred', linewidth=1, fill=False, label='Initial Tracking', zorder=3)
+  fig1, ax1 = plt.subplots()
+  plt.tight_layout()
+  chi2_nbins =  int(max(chi2_x) - min(chi2_x))
   ax1.hist(chi2_x, weights=chi2_cnt_final, bins=chi2_nbins*10, density=True, histtype='step', color='navy', linewidth=1, fill=False, label='Final Tracking', zorder=3)
   ax1.set_xlim(0,10)
   ax1.grid(zorder=0, alpha=0.5)
-  ax1.set_xlabel("Track $\chi ^{2}/ndof$", fontsize=12)
-  ax1.set_ylabel("Entries (normalized)", fontsize=12)
-  #ax1.legend(loc="upper right")
-  #ax1.legend(loc='upper right', fontsize=14)
+  ax1.set_xlabel("Track $\chi ^{2}/ndof$", fontsize=16)
+  ax1.set_ylabel("Entries (normalized)", fontsize=16)
   ax1.set_box_aspect(1)
+  plt.savefig("./plots/chi2.pdf", bbox_inches="tight")
 
 
 
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
   ntracks_nbins =  int(max(ntracks_x) - min(ntracks_x))
   ax2.hist(ntracks_x, weights=ntracks_cnt, bins=ntracks_nbins, density=True, histtype='step', color='navy', linewidth=1, fill=False, label='Final Tracking', zorder=3)
   ax2.grid(zorder=0, alpha=0.5)
   ax2.set_xlim(0,10)
-  ax2.set_xlabel("Tracks", fontsize=12)
-  ax2.set_ylabel("Entries", fontsize=12)
-  #ax2.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+  ax2.set_xlabel("Tracks", fontsize=16)
+  ax2.set_ylabel("Entries (normalized)", fontsize=16)
   ax2.set_box_aspect(1)
   
-  #legend = plt.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=12, bbox_to_anchor=(0.6, 1.22))
-  plt.savefig("./plots/tracking.pdf", bbox_inches="tight")
+  plt.savefig("./plots/ntracks.pdf", bbox_inches="tight")
 
        
 if __name__ == "__main__":

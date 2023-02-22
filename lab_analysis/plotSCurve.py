@@ -6,8 +6,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=12)
-matplotlib.rc('ytick', labelsize=12)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -40,7 +40,7 @@ def main():
       h_mpa = f_mpa.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/MPA_{mpa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_SCurve_Chip({mpa_id})')
 
     
-  fig, (ax1, ax2) = plt.subplots(1,2)
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
   #for ssa
@@ -52,16 +52,19 @@ def main():
       x_ssa.append(th) 
       y_ssa.append(h_ssa.GetBinContent(ch_id, th))
     fit_param, cov = optimize.curve_fit(fit_func, np.array(x_ssa), np.array(y_ssa), p0=[77, 6], maxfev=10000)
-    fit_plot = ax1.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param)*100 for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1)
-    ax1.plot(x_ssa, np.array(y_ssa)*100, linestyle='None', marker='o', markersize=1)
+    fit_plot = ax1.plot(np.linspace(min(x_ssa), max(x_ssa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_ssa), max(x_ssa), 10000)], linestyle='-', linewidth=1)
+    ax1.plot(x_ssa, np.array(y_ssa), linestyle='None', marker='o', markersize=1)
 
+  ax1.set_ylim(0,1.05)
   ax1.set_xlim(50,110)
-  ax1.set_ylim(0,105)
-  ax1.set_xlabel('Threshold (ThDAC)', fontsize=12)
-  ax1.set_ylabel('Efficiency (%)', fontsize=12)
+  ax1.set_xlabel('Threshold (ThDAC)', fontsize=16)
+  ax1.set_ylabel('Efficiency', fontsize=16)
   ax1.grid(alpha=0.5)
   ax1.set_box_aspect(1)
+  plt.savefig("./plots/scurve_ssa.pdf", bbox_inches="tight")
 
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
   #for mpa
   for ch_id in range(1, h_mpa.GetNbinsX()):
   #for ch_id in range(1, 2):
@@ -71,16 +74,16 @@ def main():
       x_mpa.append(th) 
       y_mpa.append(h_mpa.GetBinContent(ch_id, th))
     fit_param, cov = optimize.curve_fit(fit_func, np.array(x_mpa), np.array(y_mpa), p0=[200, 3], maxfev=10000)
-    fit_plot = ax2.plot(np.linspace(min(x_mpa), max(x_mpa), 10000), [fit_func(x, *fit_param)*100 for x in np.linspace(min(x_mpa), max(x_mpa), 10000)], linestyle='-', linewidth=1)
-    ax2.plot(x_mpa, np.array(y_mpa)*100, linestyle='None', marker='o', markersize=1)
+    fit_plot = ax2.plot(np.linspace(min(x_mpa), max(x_mpa), 10000), [fit_func(x, *fit_param) for x in np.linspace(min(x_mpa), max(x_mpa), 10000)], linestyle='-', linewidth=1)
+    ax2.plot(x_mpa, np.array(y_mpa), linestyle='None', marker='o', markersize=1)
 
+  ax2.set_ylim(0,1.05)
   ax2.set_xlim(175,240)
-  ax2.set_ylim(0,105)
-  ax2.set_xlabel('Threshold (ThDAC)', fontsize=12)
+  ax2.set_xlabel('Threshold (ThDAC)', fontsize=16)
+  ax2.set_ylabel('Efficiency', fontsize=16)
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
-
-  plt.savefig("./plots/scurve.pdf", bbox_inches="tight")
+  plt.savefig("./plots/scurve_mpa.pdf", bbox_inches="tight")
 
        
 if __name__ == "__main__":
