@@ -32,14 +32,18 @@ def main():
   campaign = args.campaign
   psp_efficiencies, pss_efficiencies, stub_efficiencies, bias_voltages = [], [], [], []
   psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err = [], [], [] 
+  psp_mean_cluster_size_list, pss_mean_cluster_size_list, bias_voltages_pss = [], [], []
   for run in run_list:
-    run_number, bias = run["RunNumber"], run["Bias"]
+    run_number, bias = run["RunNumber"], int(run["Bias"])
     #Get result file
     result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule.root', 'READ')
     # #Get PS-s and PS-p total efficiency profile
     psp_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_30.efficiencyVsTagTProfile_TDC
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
+
+    psp_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_30.clusterSizeAssociated
+    pss_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_31.clusterSizeAssociated
 
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
     psp_tdc_efficiencies_ntrack, pss_tdc_efficiencies_ntrack, stub_tdc_efficiencies_ntrack = [], [], [] 
@@ -52,6 +56,15 @@ def main():
 
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies_ntrack.append(stub_efficiency_vs_tdc.GetBinEntries(tdc))
+
+    #get cluster size
+    psp_mean_cluster_size = psp_cluster_size_hist.GetMean()
+    pss_mean_cluster_size = pss_cluster_size_hist.GetMean()
+
+    psp_mean_cluster_size_list.append(psp_mean_cluster_size)
+    if bias > 5:
+      bias_voltages_pss.append(bias)
+      pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
     #Get PS-s, PS-p and Stub  efficiencies
     max_psp_efficiency = max(psp_tdc_efficiencies)
@@ -68,7 +81,7 @@ def main():
     print(f'SSA Bias = {bias} ; Stub efficiecy = {max_stub_efficiency}')
     print(f'')
 
-    bias_voltages.append(int(bias))
+    bias_voltages.append(bias)
     psp_efficiencies.append(max_psp_efficiency)
     psp_efficiencies_err.append(calculateError(max_psp_efficiency, psp_ntrack))
 
@@ -79,19 +92,32 @@ def main():
     stub_efficiencies_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
 
-  fig, ax = plt.subplots()
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
-  psp_plot = ax.errorbar(bias_voltages, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
-  pss_plot = ax.errorbar(bias_voltages, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
-  stub_plot = ax.errorbar(bias_voltages, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax.set_xlabel('Voltage (V)', fontsize=16)
-  ax.set_ylabel("Efficiency", fontsize=16)
+  psp_plot = ax1.errorbar(bias_voltages, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
+  pss_plot = ax1.errorbar(bias_voltages, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
+  stub_plot = ax1.errorbar(bias_voltages, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
+  ax1.set_xlabel('Voltage (V)', fontsize=16)
+  ax1.set_ylabel("Efficiency", fontsize=16)
   #ax.legend(loc="center left")
-  legend = ax.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  legend = ax1.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
   #legend = ax.legend(loc='upper right', ncol=1, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1.42, 1.03))
-  ax.grid(alpha=0.5)
-  ax.set_box_aspect(1)
+  ax1.grid(alpha=0.5)
+  ax1.set_box_aspect(1)
   plt.savefig("./plots/bias_scan/bias_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
+
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+  psp_cluster_size_plot = ax2.errorbar(bias_voltages, psp_mean_cluster_size_list, linestyle='-', linewidth=1, marker='o', color='darkred', label='PS-p')
+  pss_cluster_size_plot = ax2.errorbar(bias_voltages_pss, pss_mean_cluster_size_list, linestyle='-', linewidth=1, marker='o', color='navy', label='PS-s')
+  ax2.set_xlabel('Voltage (V)', fontsize=16)
+  ax2.set_ylabel("Average cluster size", fontsize=16)
+  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.83, 1.15))
+  ax2.grid(alpha=0.5)
+  ax2.set_box_aspect(1)
+  plt.savefig("./plots/bias_scan/bias_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")
+
+
 
 if __name__ == "__main__":
   sys.exit(main())

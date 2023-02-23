@@ -1,4 +1,4 @@
-from ROOT import TFile 
+from ROOT import TFile, TF1Convolution, TGraph, TF1, TCanvas
 import csv, argparse, sys
 import numpy as np
 import math
@@ -28,6 +28,39 @@ def calculatePt(angle):
   angle_rad = angle*np.pi/180
   return 0.57 * 0.259 / np.sin(angle_rad)
 
+def get_fit_dict(angles, cluster_size_list):
+  xMin = -60.
+  xMax = 60.
+  convGaus = TF1("convGaus","1./TMath::Sqrt(2.*TMath::Pi())/[0]*exp(-0.5*x*x/([0]*[0]))", xMin, xMax)
+  clustersizeOpt = TF1("clustersizeOpt","[0]+[1]/0.09*abs(tan((x-[2])*TMath::Pi()/180.))",xMin,xMax)
+  clustersizeFuncConv = TF1Convolution(clustersizeOpt, convGaus, xMin, xMax, True)
+
+  fit_func = TF1("fit_func", clustersizeFuncConv, xMin,xMax, clustersizeFuncConv.GetNpar())
+  fit_func.SetParameter(0,1.)
+  fit_func.SetParameter(1,0.28)
+  fit_func.SetParameter(2,0.)
+  fit_func.SetParameter(3,4.)
+  graph = TGraph(len(angles), np.array(angles), np.array(cluster_size_list))
+  graph.Fit(fit_func)
+  param_s0 = fit_func.GetParameter(0)
+  param_eta = fit_func.GetParameter(1)
+  param_theta0 = fit_func.GetParameter(2)
+  param_sigma = fit_func.GetParameter(3)
+  xfit = np.linspace(-40, 40, 100000)
+  yfit = [fit_func(x) for x in xfit]
+
+  fit_dict = {
+      "s0" : param_s0,
+      "eta" : param_eta,
+      "theta0" : param_theta0,
+      "sigma" : param_sigma,
+      "xfit" : xfit,
+      "yfit" : yfit
+  }
+  return fit_dict
+
+
+
 def main():
   parser = argparse.ArgumentParser(description="bias scan")
   parser.add_argument('-csv', help="CSV file to be parsed")
@@ -43,6 +76,7 @@ def main():
   angles_pos, angles_neg, angles  =  [], [], []
   pt_momentum  =  []
   psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err, stub_efficiencies_pos_err, stub_efficiencies_neg_err = [], [], [], [], [] 
+  psp_mean_cluster_size_list, pss_mean_cluster_size_list = [], []
 
   for run in run_list:
     run_number, angle = run["RunNumber"], float(run["Angle"])
@@ -56,6 +90,9 @@ def main():
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
 
+    psp_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_30.clusterSizeAssociated
+    pss_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_31.clusterSizeAssociated
+
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
     psp_tdc_efficiencies_ntrack, pss_tdc_efficiencies_ntrack, stub_tdc_efficiencies_ntrack = [], [], [] 
     for tdc in range(0,9):
@@ -67,6 +104,13 @@ def main():
 
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies_ntrack.append(stub_efficiency_vs_tdc.GetBinEntries(tdc))
+
+    #Get cluster size
+    psp_mean_cluster_size = psp_cluster_size_hist.GetMean()
+    pss_mean_cluster_size = pss_cluster_size_hist.GetMean()
+
+    psp_mean_cluster_size_list.append(psp_mean_cluster_size)
+    pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
     #Get PS-s, PS-p and Stub  efficiencies
     max_psp_efficiency = max(psp_tdc_efficiencies)
@@ -102,12 +146,14 @@ def main():
       stub_efficiencies_neg.append(max_stub_efficiency)
       stub_efficiencies_neg_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
+
+  #################################################################################
+  ######################### Stub Effeciency Analysis ############################
+  #################################################################################
   #params, cov = optimize.curve_fit(fit_func, np.array(angles), np.array(stub_efficiency), p0=[1, 1, 15, 1], maxfev=8000)
   params_pos, cov_pos = optimize.curve_fit(fit_func, np.array(angles_pos), np.array(stub_efficiencies_pos), maxfev=10000)
   params_neg, cov_neg = optimize.curve_fit(fit_func, np.array(angles_neg), np.array(stub_efficiencies_neg), maxfev=10000)
   
-  params_pt, cov_pt = optimize.curve_fit(fit_func, np.array(pt_momentum), np.array(stub_efficiencies_pos), maxfev=10000)
-  print(params_pos, params_neg, params_pt)
 
   fig1, ax1 = plt.subplots()
   plt.tight_layout()
@@ -130,18 +176,67 @@ def main():
   ax1.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
 
+  #################################################################################
+  ######################### pT Discrimination Analysis ############################
+  #################################################################################
+  params_pt, cov_pt = optimize.curve_fit(fit_func, np.array(pt_momentum), np.array(stub_efficiencies_pos), maxfev=10000)
+  print(params_pos, params_neg, params_pt)
+
   fig2, ax2 = plt.subplots()
   plt.tight_layout()
-  ax2.errorbar(pt_momentum, stub_efficiencies_pos, yerr=stub_efficiencies_pos_err, linestyle='None', marker='o', markersize=5, color='darkgreen', label='Stubs')
+  ax2.errorbar(pt_momentum, stub_efficiencies_pos, yerr=stub_efficiencies_pos_err, linestyle='None', marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
   ax2.errorbar(np.linspace(0, int(max(pt_momentum))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum))+1, 10000), *params_pt)), linestyle='--', linewidth=1, color='darkgreen', label='Stubs fit')
-  ax2.set_xlabel('Transverse Momentum (GeV)', fontsize=16)
-  ax2.xaxis.set_ticks(np.arange(0, 6, 1))
+  ax2.set_xlabel('Transverse momentum (GeV)', fontsize=16)
+  ax2.xaxis.set_ticks(np.arange(0, 6.1, 1))
   ax2.set_ylabel("Stub efficiency", fontsize=16)
   #ax.legend(loc="center left")
   legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.87, 1.15))
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")
+
+
+  #################################################################################
+  ######################### Cluster Size Analysis ############################
+  #################################################################################
+  psp_fit_dict = get_fit_dict(angles, psp_mean_cluster_size_list)
+  psp_param_s0 = psp_fit_dict["s0"]
+  psp_param_eta = psp_fit_dict["eta"]
+  psp_param_theta0 = psp_fit_dict["theta0"]
+  psp_param_sigma = psp_fit_dict["sigma"]
+  psp_xfit = psp_fit_dict["xfit"]
+  psp_yfit = psp_fit_dict["yfit"]
+
+  pss_fit_dict = get_fit_dict(angles, pss_mean_cluster_size_list)
+  pss_param_s0 = pss_fit_dict["s0"]
+  pss_param_eta = pss_fit_dict["eta"]
+  pss_param_theta0 = pss_fit_dict["theta0"]
+  pss_param_sigma = pss_fit_dict["sigma"]
+  pss_xfit = pss_fit_dict["xfit"]
+  pss_yfit = pss_fit_dict["yfit"]
+
+  fig3, ax3 = plt.subplots()
+  plt.tight_layout()
+  psp_plot = ax3.errorbar(angles, psp_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o',  capsize=3, color='darkred', label='PS-p')  
+  psp_fit_plot = ax3.errorbar(psp_xfit, psp_yfit, linestyle='--', linewidth=1, color='darkred', label='PS-p fit')
+
+  pss_plot = ax3.errorbar(angles, pss_mean_cluster_size_list, linestyle='None', linewidth=2, marker='o', capsize=3, color='navy', label='PS-s')  
+  pss_fit_plot = ax3.errorbar(pss_xfit, pss_yfit, linestyle='--', linewidth=1, color='navy', label='PS-s fit')
+
+  ax3.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
+  #ax3.xaxis.set_ticks(np.arange(0, 6.1, 1))
+  ax3.set_ylabel("Average cluster size", fontsize=16)
+  #ax.legend(loc="center left")
+  legend = ax3.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
+  ax3.grid(alpha=0.5)
+  ax3.set_box_aspect(1)
+  plt.savefig("./plots/angular_scan/angular_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")
+
+  #################################################################################
+  ######################### Resolution Analysis ############################
+  #################################################################################
+
+
 
 if __name__ == "__main__":
   sys.exit(main())

@@ -32,6 +32,7 @@ def main():
   campaign = args.campaign
   psp_efficiencies, pss_efficiencies, stub_efficiencies, mpa_thresholds, ssa_thresholds = [], [], [], [], []
   psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err = [], [], [] 
+  psp_mean_cluster_size_list, pss_mean_cluster_size_list = [], []
   for run in run_list:
     run_number, th_MPA, th_SSA = run["RunNumber"], run["Threshold_MPA"], run["Threshold_SSA"]
     #Get result file
@@ -40,6 +41,9 @@ def main():
     psp_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_30.efficiencyVsTagTProfile_TDC
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
+
+    psp_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_30.clusterSizeAssociated
+    pss_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_31.clusterSizeAssociated
 
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
     psp_tdc_efficiencies_ntrack, pss_tdc_efficiencies_ntrack, stub_tdc_efficiencies_ntrack = [], [], [] 
@@ -52,6 +56,13 @@ def main():
 
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies_ntrack.append(stub_efficiency_vs_tdc.GetBinEntries(tdc))
+
+    #get cluster size
+    psp_mean_cluster_size = psp_cluster_size_hist.GetMean()
+    pss_mean_cluster_size = pss_cluster_size_hist.GetMean()
+
+    psp_mean_cluster_size_list.append(psp_mean_cluster_size)
+    pss_mean_cluster_size_list.append(pss_mean_cluster_size)
 
     #Get PS-s, PS-p and Stub  efficiencies
     max_psp_efficiency = max(psp_tdc_efficiencies)
@@ -80,17 +91,30 @@ def main():
     stub_efficiencies.append(max_stub_efficiency)
     stub_efficiencies_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
-  fig, ax = plt.subplots()
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
-  psp_plot = ax.errorbar(mpa_thresholds, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
-  pss_plot = ax.errorbar(ssa_thresholds, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
-  stub_plot = ax.errorbar(ssa_thresholds, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax.set_xlabel('Threshold (ThDAC)', fontsize=16)
-  ax.set_ylabel("Efficiency", fontsize=16)
-  legend = ax.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
-  ax.grid(alpha=0.5)
-  ax.set_box_aspect(1)
+  psp_plot = ax1.errorbar(mpa_thresholds, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
+  pss_plot = ax1.errorbar(ssa_thresholds, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
+  stub_plot = ax1.errorbar(ssa_thresholds, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='solid', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
+  ax1.set_xlabel('Threshold (ThDAC)', fontsize=16)
+  ax1.set_ylabel("Efficiency", fontsize=16)
+  legend = ax1.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  ax1.grid(alpha=0.5)
+  ax1.set_box_aspect(1)
   plt.savefig("./plots/threshold_scan/threshold_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
+
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+  psp_cluster_size_plot = ax2.errorbar(mpa_thresholds, psp_mean_cluster_size_list, linestyle='-', linewidth=1, marker='o', color='darkred', label='PS-p')
+  pss_cluster_size_plot = ax2.errorbar(ssa_thresholds, pss_mean_cluster_size_list, linestyle='-', linewidth=1, marker='o', color='navy', label='PS-s')
+  ax2.set_xlabel('Threshold (ThDAC)', fontsize=16)
+  ax2.set_ylabel("Average cluster size", fontsize=16)
+  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.83, 1.15))
+  ax2.grid(alpha=0.5)
+  ax2.set_box_aspect(1)
+  plt.savefig("./plots/threshold_scan/threshold_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")
+
+
 
 if __name__ == "__main__":
   sys.exit(main())

@@ -20,7 +20,6 @@ def parseCSV(file_path):
   return csv.DictReader(csv_file)
 
 def fit_func(x, mu, sigma):
-  #return 0.5 * special.erfc((x - mu) / sigma)
   return 0.5 * special.erfc((x - mu) / (sqrt(2.) * sigma))
 
 def main():
@@ -34,6 +33,27 @@ def main():
   h_scurve_ssa, h_scurve_mpa = TH2F(), TH2F()
   board_id, optical_group_id = 0,0
 
+  
+  #module_noise_map = {
+  #  0:{
+  #    "SSA":{
+  #      0:[],  1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]
+  #    },
+  #    "MPA":{
+  #      0:[],  1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]
+  #    }
+  #  },
+  #  
+  #  1:{
+  #    "SSA":{
+  #      0:[],  1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]
+  #    },
+  #    "MPA":{
+  #      0:[],  1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[]
+  #    }
+  #  }  
+  #}
+
   ssa_noise_array = {"pre-assembly":[], "pre-encapsulation":[], "post-encapsulation":[]}
   mpa_noise_array = {"pre-assembly":[], "pre-encapsulation":[], "post-encapsulation":[]}
 
@@ -44,22 +64,28 @@ def main():
       optical_group_id = 1
     for hybrid_local_id in range(0, 2):
       hybrid_id = 2*optical_group_id + hybrid_local_id
+      hybrid_ssa, hybrid_mpa = [], []
       for chip_id in range(0, 8):
         ssa_id, mpa_id = chip_id, chip_id + 8
+        print(hybrid_local_id, chip_id)
 
         #for ssa
+        chip_ssa = []
         h_scurve_ssa = f_noise.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/SSA_{ssa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_SCurve_Chip({ssa_id})')
         if h_scurve_ssa == None:
           continue
-        for ch_id in range(1, h_scurve_ssa.GetNbinsX()):
+        for ch_id in range(0, h_scurve_ssa.GetNbinsX()):
           x_array, y_array = [], []
-          for th in range(1, h_scurve_ssa.GetNbinsY()):
+          for th in range(0, h_scurve_ssa.GetNbinsY()):
             x_array.append(th) 
             y_array.append(h_scurve_ssa.GetBinContent(ch_id, th))
           fit_param, cov = optimize.curve_fit(fit_func, np.array(x_array), np.array(y_array), p0=[77, 6], maxfev=10000)
           ssa_noise_array[stage].append(fit_param[1])
+          #if stage == "post-encapsulation":
+          #  module_noise_map[hybrid_local_id]["SSA"][chip_id].append(fit_param[1])
 
         #for mpa
+        chip_mpa = []
         if stage == "pre-assembly":
           mpa_id = chip_id + chip_id*hybrid_local_id + 1
           noise_file = parseCSV(f'results/OT_ModuleTest_Dobby_MaPSA/mpa_test_35494_002_PSP_MAINL_chip{mpa_id}.csv')
@@ -70,14 +96,34 @@ def main():
           h_scurve_mpa = f_noise.Get(f'Detector/Board_{board_id}/OpticalGroup_{optical_group_id}/Hybrid_{hybrid_id}/MPA_{mpa_id}/D_B({board_id})_O({optical_group_id})_H({hybrid_id})_SCurve_Chip({mpa_id})')
           if h_scurve_mpa == None:
             continue
-          for ch_id in range(1, h_scurve_mpa.GetNbinsX()):
+          for ch_id in range(0, h_scurve_mpa.GetNbinsX()):
             x_array, y_array = [], []
-            for th in range(1, h_scurve_mpa.GetNbinsY()):
+            for th in range(0, h_scurve_mpa.GetNbinsY()):
               x_array.append(th) 
               y_array.append(h_scurve_mpa.GetBinContent(ch_id, th))
             fit_param, cov = optimize.curve_fit(fit_func, np.array(x_array), np.array(y_array), p0=[200, 3], maxfev=10000)
             mpa_noise_array[stage].append(fit_param[1])
-  
+            #if stage == "post-encapsulation":
+            #  module_noise_map[hybrid_local_id]["MPA"][chip_id].append(fit_param[1])
+
+  #fig0, ax0 = plt.subplots()
+  #plt.tight_layout()
+  #n_mpa_row, n_mpa_col = 16, 120
+  #n_mpa_ch = n_mpa_col * n_mpa_row
+  #for hybrid_id in range(0,1):
+  #  for chip_id in range(0,1):
+  #    mpa_cols, mpa_rows, mpa_ch = [], [], []
+  #    for ch_id in range(0, n_mpa_ch):
+  #      mpa_ch.append(ch_id)
+  #      mpa_col = ch_id%120
+  #      mpa_row = int(ch_id/120)
+  #      mpa_cols.append(mpa_col)
+  #      mpa_rows.append(mpa_row)
+  #    print(len(mpa_ch), len(module_noise_map[hybrid_id]["MPA"][chip_id]))
+  #    ax0.hist2d(mpa_ch, mpa_ch, bins=[len(mpa_cols), len(mpa_rows)], weights=module_noise_map[hybrid_id]["MPA"][chip_id], cmap=plt.cm.jet)
+  #plt.savefig("./plots/noise_mpa.pdf", bbox_inches="tight")
+
+
   ssa_thdac, mpa_thdac = 250, 94
 
   fig1, (ax11, ax21) = plt.subplots(1, 2)
