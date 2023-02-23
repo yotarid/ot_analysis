@@ -115,14 +115,15 @@ def main():
   ax1.errorbar(angles, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
   ax1.errorbar(angles, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
   ax1.errorbar(angles, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax1.errorbar(np.linspace(0, 35, 10000), np.array(fit_func(np.linspace(0, 35, 10000), *params_pos)), linestyle='-', linewidth=1, capsize=3, color='darkgreen')
-  ax1.errorbar(np.linspace(0, -35, 10000), np.array(fit_func(np.linspace(0, -35, 10000), *params_neg)), linestyle='-', linewidth=1, capsize=3, color='darkgreen')
+  ax1.errorbar(np.linspace(0, 35, 10000), np.array(fit_func(np.linspace(0, 35, 10000), *params_pos)), linestyle='--', linewidth=1, capsize=3, color='darkgreen', label='Stubs fit')
+  ax1.errorbar(np.linspace(0, -35, 10000), np.array(fit_func(np.linspace(0, -35, 10000), *params_neg)), linestyle='--', linewidth=1, capsize=3, color='darkgreen')
 
 
   ax1.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
+  ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
   ax1.set_ylabel("Efficiency", fontsize=16)
 
-  legend = ax1.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  legend = ax1.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
   #legend = ax1.legend(loc='upper right', ncol=1, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1.42, 1.03))
 
   ax1.grid(alpha=0.5)
@@ -132,11 +133,12 @@ def main():
   fig2, ax2 = plt.subplots()
   plt.tight_layout()
   ax2.errorbar(pt_momentum, stub_efficiencies_pos, yerr=stub_efficiencies_pos_err, linestyle='None', marker='o', markersize=5, color='darkgreen', label='Stubs')
-  plt.plot(np.linspace(0, int(max(pt_momentum))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum))+1, 10000), *params_pt)), linestyle='-', linewidth=1, color='darkgreen', label='Stubs fit')
+  ax2.errorbar(np.linspace(0, int(max(pt_momentum))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum))+1, 10000), *params_pt)), linestyle='--', linewidth=1, color='darkgreen', label='Stubs fit')
   ax2.set_xlabel('Transverse Momentum (GeV)', fontsize=16)
+  ax2.xaxis.set_ticks(np.arange(0, 6, 1))
   ax2.set_ylabel("Stub efficiency", fontsize=16)
   #ax.legend(loc="center left")
-  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1., 1.15))
+  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.87, 1.15))
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")

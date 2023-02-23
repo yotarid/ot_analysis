@@ -56,7 +56,7 @@ def main():
   ax1.hist(chi2_x, weights=chi2_cnt_final, bins=chi2_nbins*10, density=True, histtype='step', color='navy', linewidth=1, fill=False, label='Final Tracking', zorder=3)
   ax1.set_xlim(0,10)
   ax1.grid(zorder=0, alpha=0.5)
-  ax1.set_xlabel("Track $\chi ^{2}/ndof$", fontsize=16)
+  ax1.set_xlabel("Track $\mathrm{\chi ^{2}/ndof}$", fontsize=16)
   ax1.set_ylabel("Entries (normalized)", fontsize=16)
   ax1.set_box_aspect(1)
   plt.savefig("./plots/chi2.pdf", bbox_inches="tight")
