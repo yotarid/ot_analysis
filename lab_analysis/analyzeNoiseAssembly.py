@@ -7,8 +7,8 @@ import math
 from scipy import optimize, special
 import matplotlib
 matplotlib.rc('font',family='Times New Roman') 
-matplotlib.rc('xtick', labelsize=12)
-matplotlib.rc('ytick', labelsize=12)
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.ticker import ScalarFormatter
@@ -126,43 +126,55 @@ def main():
 
   ssa_thdac, mpa_thdac = 250, 94
 
-  fig1, (ax11, ax21) = plt.subplots(1, 2)
+  fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
   #ssa
-  ax12 = ax11.twiny()
-  ax12.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=12)
-  ax12.set_xlim(0,8*ssa_thdac)
-  #ax12.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-  ax12.set_box_aspect(1)
-
-  ax11.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=1, label='Pre-Assembly', zorder=3)
-  ax11.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=1, label='Pre-Encapsulation', zorder=3)
-  ax11.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=1, label='Post-Encapsulation', zorder=3)
-  ax11.set_xlabel('Channel Noise (ThDAC)', fontsize=12, fontname='Times New Roman')
-  ax11.set_ylabel('Entries', fontsize=12, fontname='Times New Roman')
-  ax11.grid(zorder=0, alpha=0.5)
-  ax11.set_xlim(0,8)
+  ax11 = ax1.twiny()
+  ax11.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
+  ax11.set_xlim(0,8*ssa_thdac)
+  #ax11.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax11.set_box_aspect(1)
 
+  ax1.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='PreAs', zorder=3)
+  ax1.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='PreEn', zorder=3)
+  ax1.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='PostEn', zorder=3)
+  ax1.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
+  ax1.set_ylabel('Entries', fontsize=16)
+  ax1.grid(zorder=0, alpha=0.5)
+  ax1.set_xlim(0,8)
+  ax1.set_ylim(0,2)
+  ax1.xaxis.set_ticks(np.arange(0,8,2))
+  ax1.yaxis.set_ticks(np.arange(0,2,0.2))
+  ax1.legend(loc='upper right', ncol=3, columnspacing=1, fontsize=16, bbox_to_anchor=(1.04, 1.28))
+  ax1.set_box_aspect(1)
+  plt.savefig("./plots/noise_assembly_ssa.pdf", bbox_inches="tight")
+
+
   #mpa
-  ax22 = ax21.twiny()
-  ax22.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=12)
-  ax22.set_xlim(0,5*mpa_thdac)
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+
+  ax22 = ax2.twiny()
+  ax22.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
+  ax22.set_xlim(0, 500)
   #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-
-
-  ax21.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), histtype='step', color='darkgrey', linewidth=1, label='Pre-Assembly', zorder=3)
-  ax21.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), histtype='step', color='steelblue', linewidth=1, label='Pre-Encapsulation', zorder=3)
-  ax21.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), histtype='step', color='navy', linewidth=1, label='Post-Encapsulation', zorder=3)
-  ax21.set_xlabel('Channel Noise (ThDAC)', fontsize=12, fontname='Times New Roman')
-  ax21.grid(zorder=0, alpha=0.5)
-  ax21.set_xlim(0,5)
-  ax21.set_box_aspect(1)
   ax22.set_box_aspect(1)
 
-  ax11.legend(loc='upper right', ncol=3, columnspacing=0.8, fontsize=12, bbox_to_anchor=(2.19, 1.35))
-  plt.savefig("./plots/noise_assembly.pdf", bbox_inches="tight")
+  ax2.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='PreAs', zorder=3)
+  ax2.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='PreEn', zorder=3)
+  ax2.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='PostEn', zorder=3)
+  ax2.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
+  ax2.set_ylabel('Entries', fontsize=16)
+  ax2.grid(zorder=0, alpha=0.5)
+  ax2.set_xlim(0,8)
+  ax2.set_ylim(0,2)
+  ax2.xaxis.set_ticks(np.arange(0,8,2))
+  ax2.yaxis.set_ticks(np.arange(0,2,0.2))
+  ax2.set_box_aspect(1)
+
+  ax2.legend(loc='upper right', ncol=3, columnspacing=1, fontsize=16, bbox_to_anchor=(1.04, 1.28))
+  plt.savefig("./plots/noise_assembly_mpa.pdf", bbox_inches="tight")
        
 if __name__ == "__main__":
   sys.exit(main())
