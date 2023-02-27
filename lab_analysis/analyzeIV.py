@@ -18,45 +18,60 @@ def parseCSV(file_path):
 
 def main():
   parser = argparse.ArgumentParser(description="IV Measurement")
-  parser.add_argument('-file', help="CSV file to be parsed")
+  parser.add_argument('-csv', help="CSV file to be parsed")
 
   args = parser.parse_args()
 
-  iv_files = parseCSV(args.file)
+  csv_file = parseCSV(args.csv)
 
-  psp_v_list, pss_v_list, module_v_list, psp_i_list, pss_i_list, module_i_list = [], [], [], [], [], []
-  for line in iv_files:
+  #psp_v_list, pss_v_list, module_v_list, psp_i_list, pss_i_list, module_i_list = [], [], [], [], [], []
+  v_dict, i_dict = {}, {}
+  sensors = []
+  for line in csv_file:
     sensor, iv_file = line["sensor"], parseCSV("./results/"+line["file"])
+    sensors.append(sensor)
+    i_temp, v_temp = [], []
     for iv_line in iv_file:
-      voltage, current = -float(iv_line["voltage"]), -float(iv_line["current"])
+      v, i = -float(iv_line["voltage"]), -float(iv_line["current"])
       #restrict to -300V
-      if voltage > 300: continue
-      #avoid voltage duplication
-      #fill proper container
-      if sensor == "psp":
-        psp_i_list.append(current)
-        psp_v_list.append(voltage)
-      elif sensor == "pss":
-        pss_i_list.append(current)
-        pss_v_list.append(voltage)
-      else:
-        module_i_list.append(current)
-        module_v_list.append(voltage)
+      if v > 300: continue
+      v_temp.append(v)
+      i_temp.append(i)
+    v_dict[sensor] = v_temp      
+    i_dict[sensor] = i_temp      
     
-    
-  fig, ax = plt.subplots()
+  fig1, ax1 = plt.subplots()
 
-  ax.plot(psp_v_list, psp_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="darkred", label="PS-p")    
-  ax.plot(pss_v_list, pss_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="navy", label="PS-s")    
-  ax.plot(module_v_list, module_i_list, linestyle='-', linewidth=3, marker='o', markersize=3, color="black", label="PS module")    
-  ax.set_xlabel("Voltage (V)", fontsize=16)
-  ax.set_ylabel("Current (A)", fontsize=16)
-  ax.set_box_aspect(1)
+  ax1.plot(v_dict["PS_40_05_DSY-00003"], i_dict["PS_40_05_DSY-00003"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00003")    
+  ax1.plot(v_dict["PS_40_05_DSY-00004"], i_dict["PS_40_05_DSY-00004"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00004")    
+  ax1.plot(v_dict["PS_40_05_DSY-00005"], i_dict["PS_40_05_DSY-00005"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00005")    
+
+  ax1.set_xlabel("Voltage (V)", fontsize=16)
+  ax1.set_ylabel("Current (A)", fontsize=16)
+  ax1.set_box_aspect(1)
   #plt.ticklabel_format(axis='both', style='sci')
-  plt.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.53, 0.87))
+  ax1.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.85, 0.865))
   plt.grid(zorder=0, alpha=0.5)
+  plt.savefig("./plots/iv_measurement_modules.pdf", bbox_inches="tight")
 
-  plt.savefig("./plots/iv_measurement.pdf", bbox_inches="tight")
+
+  fig2, ax2 = plt.subplots()
+
+  ax2.plot(v_dict["PS_40_05_DSY-00005 PS-p"], i_dict["PS_40_05_DSY-00005 PS-p"], linestyle='-', linewidth=1, marker='o', markersize=3, label="PS-p")    
+  ax2.plot(v_dict["PS_40_05_DSY-00005 PS-s"], i_dict["PS_40_05_DSY-00005 PS-s"], linestyle='-', linewidth=1, marker='o', markersize=3, label="PS-s")    
+  ax2.plot(v_dict["PS_40_05_DSY-00005 No VTRx+"], i_dict["PS_40_05_DSY-00005 No VTRx+"], linestyle='-', linewidth=1, marker='o', markersize=3, label="Module w/o VTRx+")    
+  ax2.plot(v_dict["PS_40_05_DSY-00005"], i_dict["PS_40_05_DSY-00005"], linestyle='-', linewidth=1, marker='o', markersize=3, label="Module w/ VTRx+")    
+
+  ax2.set_xlabel("Voltage (V)", fontsize=16)
+  ax2.set_ylabel("Current (A)", fontsize=16)
+  ax2.set_box_aspect(1)
+  ax2.legend(loc="center right", ncol=1, fontsize=16, bbox_to_anchor=(1.78, 0.825))
+  plt.grid(zorder=0, alpha=0.5)
+  plt.savefig("./plots/iv_measurement_assembly.pdf", bbox_inches="tight")
+
+
+
+  fig1, ax1 = plt.subplots()
         
 if __name__ == "__main__":
   sys.exit(main())

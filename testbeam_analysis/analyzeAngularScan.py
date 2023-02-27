@@ -46,7 +46,7 @@ def get_fit_dict(angles, cluster_size_list):
   param_eta = fit_func.GetParameter(1)
   param_theta0 = fit_func.GetParameter(2)
   param_sigma = fit_func.GetParameter(3)
-  xfit = np.linspace(-40, 40, 100000)
+  xfit = np.linspace(-25, 25, 100000)
   yfit = [fit_func(x) for x in xfit]
 
   fit_dict = {
@@ -161,12 +161,14 @@ def main():
   ax1.errorbar(angles, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
   ax1.errorbar(angles, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
   ax1.errorbar(angles, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax1.errorbar(np.linspace(0, 35, 10000), np.array(fit_func(np.linspace(0, 35, 10000), *params_pos)), linestyle='--', linewidth=1, capsize=3, color='darkgreen', label='Stubs fit')
-  ax1.errorbar(np.linspace(0, -35, 10000), np.array(fit_func(np.linspace(0, -35, 10000), *params_neg)), linestyle='--', linewidth=1, capsize=3, color='darkgreen')
+  ax1.errorbar(np.linspace(0, 26, 10000), np.array(fit_func(np.linspace(0, 26, 10000), *params_pos)), linestyle='--', linewidth=1, capsize=3, color='darkgreen', label='Stubs fit')
+  ax1.errorbar(np.linspace(0, -26, 10000), np.array(fit_func(np.linspace(0, -26, 10000), *params_neg)), linestyle='--', linewidth=1, capsize=3, color='darkgreen')
 
 
   ax1.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
-  ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
+  #ax1.set_xlim(-25,25)
+  #ax1.xaxis.set_ticks(np.arange(-25, 25, 10))
+  #ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
   ax1.set_ylabel("Efficiency", fontsize=16)
 
   legend = ax1.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
@@ -224,7 +226,8 @@ def main():
   pss_fit_plot = ax3.errorbar(pss_xfit, pss_yfit, linestyle='--', linewidth=1, color='navy', label='PS-s fit')
 
   ax3.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
-  #ax3.xaxis.set_ticks(np.arange(0, 6.1, 1))
+  #ax3.xaxis.set_ticks(np.arange(-25, 25, 10))
+  ax3.yaxis.set_ticks(np.arange(1, 2, 0.2))
   ax3.set_ylabel("Average cluster size", fontsize=16)
   #ax.legend(loc="center left")
   legend = ax3.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
