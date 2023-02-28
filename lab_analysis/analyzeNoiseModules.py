@@ -24,10 +24,10 @@ def fit_func(x, mu, sigma):
 
 def main():
   parser = argparse.ArgumentParser(description="Noise")
-  parser.add_argument('-file', help="CSV file to be parsed")
+  parser.add_argument('-csv', help="CSV file to be parsed")
 
   args = parser.parse_args()
-  csv_file = parseCSV(args.file)
+  csv_file = parseCSV(args.csv)
 
   f_ssa, f_mpa = TFile(), TFile()
   h_scurve_ssa, h_scurve_mpa = TH2F(), TH2F()
@@ -43,8 +43,6 @@ def main():
     modules.append(module)
 
     ext_ssa, ext_mpa = "", ""
-    if module == "PS_40_05_DSY-00003":
-      ext_mpa, ext_ssa = "_MPA", "_SSA"
 
     f_ssa = TFile.Open(f'results/{folder}/Hybrid'+ str(ext_ssa) +'.root', 'READ')
     f_mpa = TFile.Open(f'results/{folder}/Hybrid' + str(ext_mpa) + '.root', 'READ')
@@ -56,17 +54,12 @@ def main():
     
     ssa_p0_mean, ssa_p0_sig = 77, 6
     mpa_p0_mean, mpa_p0_sig = 200, 3
-    if module == "PS_40_05_DSY-00003":
-      ssa_p0_mean, ssa_p0_sig = 85, 6
-      mpa_p0_mean, mpa_p0_sig = 190, 3
 
     print()
     for hybrid_local_id in range(0, 1):
       hybrid_id = 2*optical_group_id + hybrid_local_id
       for chip_id in range(0, 8):
         ssa_id, mpa_id = chip_id, chip_id + 8
-        if module == "PS_40_05_DSY-00003":
-          mpa_id = chip_id
         print(f'Module : {module} -- Hybrid : {hybrid_id} -- Chip : {chip_id}')
 
         #for ssa
@@ -101,6 +94,8 @@ def main():
   fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
+  m_colors = ["orange", "purple", "brown", "olive"]
+
   #ssa
   ax11 = ax1.twiny()
   ax11.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
@@ -108,7 +103,6 @@ def main():
   #ax11.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax11.set_box_aspect(1)
 
-  m_colors = ["darkorange", "darkred", "darkgreen", "navy"]
   for idx, m in enumerate(modules):
     print('Module ' + str(m) + ' ' + str(len(ssa_noise_dict[m])))
     ax1.hist(ssa_noise_dict[m], bins=40, range=(0,10), density=True, histtype='step', color=m_colors[idx], linewidth=1, label=m, zorder=3)
@@ -116,11 +110,11 @@ def main():
   ax1.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
   ax1.set_ylabel('Entries', fontsize=16)
   ax1.grid(zorder=0, alpha=0.5)
-  ax1.set_xlim(0,8)
-  #ax1.set_ylim(0,2)
-  ax1.xaxis.set_ticks(np.arange(0,8.1,2))
+  #ax1.set_xlim(0,8)
+  ax1.set_ylim(0,2)
+  #ax1.xaxis.set_ticks(np.arange(0,8.1,2))
   ax1.yaxis.set_ticks(np.arange(0,2.1,0.2))
-  ax1.legend(loc='upper right', ncol=2, columnspacing=1, fontsize=12, bbox_to_anchor=(1.04, 1.32))
+  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax1.set_box_aspect(1)
   plt.savefig("./plots/noise_modules_ssa.pdf", bbox_inches="tight")
 
@@ -135,7 +129,6 @@ def main():
   #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax22.set_box_aspect(1)
 
-  m_colors = ["darkorange", "darkred", "darkgreen", "navy"]
   for idx, m in enumerate(modules):
     print('Module ' + str(m) + ' ' + str(len(mpa_noise_dict[m])))
     ax2.hist(mpa_noise_dict[m], bins=40, range=(0,10), density=True, histtype='step', color=m_colors[idx], linewidth=1, label=m, zorder=3)
@@ -143,13 +136,13 @@ def main():
   ax2.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
   ax2.set_ylabel('Entries', fontsize=16)
   ax2.grid(zorder=0, alpha=0.5)
-  ax2.set_xlim(0,8)
-  #ax2.set_ylim(0,2)
-  ax2.xaxis.set_ticks(np.arange(0,8.1,2))
-  ax2.yaxis.set_ticks(np.arange(0,2.1,0.2))
+  #ax2.set_xlim(0,8)
+  ax2.set_ylim(0,2)
+  #ax2.xaxis.set_ticks(np.arange(0,8.1,2))
+  ax2.yaxis.set_ticks(np.arange(0,2.3,0.2))
   ax2.set_box_aspect(1)
 
-  ax2.legend(loc='upper right', ncol=2, columnspacing=1, fontsize=12, bbox_to_anchor=(1.04, 1.32))
+  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.savefig("./plots/noise_modules_mpa.pdf", bbox_inches="tight")
 
 if __name__ == "__main__":

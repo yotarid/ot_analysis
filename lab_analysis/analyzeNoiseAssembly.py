@@ -24,10 +24,10 @@ def fit_func(x, mu, sigma):
 
 def main():
   parser = argparse.ArgumentParser(description="Noise")
-  parser.add_argument('-file', help="CSV file to be parsed")
+  parser.add_argument('-csv', help="CSV file to be parsed")
 
   args = parser.parse_args()
-  noise_files = parseCSV(args.file)
+  csv_file = parseCSV(args.csv)
 
   f_ssa, f_mpa = TFile(), TFile()
   h_scurve_ssa, h_scurve_mpa = TH2F(), TH2F()
@@ -57,7 +57,7 @@ def main():
   ssa_noise_array = {"pre-assembly":[], "pre-encapsulation":[], "post-encapsulation":[]}
   mpa_noise_array = {"pre-assembly":[], "pre-encapsulation":[], "post-encapsulation":[]}
 
-  for line in noise_files:
+  for line in csv_file:
     stage, folder = line["stage"], line["folder"]
     f_noise = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
     if stage == "pre-encapsulation" or stage == "post-encapsulation":
@@ -136,17 +136,17 @@ def main():
   #ax11.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax11.set_box_aspect(1)
 
-  ax1.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='PreAs', zorder=3)
-  ax1.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='PreEn', zorder=3)
-  ax1.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='PostEn', zorder=3)
+  ax1.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='Pre-assembly', zorder=3)
+  ax1.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='Pre-encapsulation', zorder=3)
+  ax1.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='Post-encapsulation', zorder=3)
   ax1.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
   ax1.set_ylabel('Entries', fontsize=16)
   ax1.grid(zorder=0, alpha=0.5)
-  ax1.set_xlim(0,8)
-  ax1.set_ylim(0,2)
-  ax1.xaxis.set_ticks(np.arange(0,8,2))
-  ax1.yaxis.set_ticks(np.arange(0,2,0.2))
-  ax1.legend(loc='upper right', ncol=3, columnspacing=1, fontsize=16, bbox_to_anchor=(1.04, 1.28))
+  #ax1.set_xlim(0,8.1)
+  ax1.set_ylim(0,2.1)
+  #ax1.xaxis.set_ticks(np.arange(0,8.1,2))
+  ax1.yaxis.set_ticks(np.arange(0,2.1,0.2))
+  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax1.set_box_aspect(1)
   plt.savefig("./plots/noise_assembly_ssa.pdf", bbox_inches="tight")
 
@@ -161,19 +161,19 @@ def main():
   #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
   ax22.set_box_aspect(1)
 
-  ax2.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='PreAs', zorder=3)
-  ax2.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='PreEn', zorder=3)
-  ax2.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='PostEn', zorder=3)
+  ax2.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='Pre-assembly', zorder=3)
+  ax2.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='Pre-encapsulation', zorder=3)
+  ax2.hist(mpa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='Post-encapsulation', zorder=3)
   ax2.set_xlabel('Channel Noise (ThDAC)', fontsize=16)
   ax2.set_ylabel('Entries', fontsize=16)
   ax2.grid(zorder=0, alpha=0.5)
-  ax2.set_xlim(0,8)
-  ax2.set_ylim(0,2)
-  ax2.xaxis.set_ticks(np.arange(0,8,2))
-  ax2.yaxis.set_ticks(np.arange(0,2,0.2))
+  #ax2.set_xlim(0,8.1)
+  ax2.set_ylim(0,2.1)
+  #ax2.xaxis.set_ticks(np.arange(0,8.1,2))
+  ax2.yaxis.set_ticks(np.arange(0,2.1,0.2))
   ax2.set_box_aspect(1)
 
-  ax2.legend(loc='upper right', ncol=3, columnspacing=1, fontsize=16, bbox_to_anchor=(1.04, 1.28))
+  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.savefig("./plots/noise_assembly_mpa.pdf", bbox_inches="tight")
        
 if __name__ == "__main__":

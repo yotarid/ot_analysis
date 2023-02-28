@@ -17,7 +17,7 @@ def parseCSV(file_path):
   return csv.DictReader(csv_file)
 
 def main():
-  parser = argparse.ArgumentParser(description="correlation plot")
+  parser = argparse.ArgumentParser(description="TDC plot")
   parser.add_argument('-file', help="root file")
 
   args = parser.parse_args()
@@ -54,7 +54,7 @@ def main():
   ax.grid(zorder=0, alpha=0.5)
   ax.set_xlabel("TDC phase", fontsize=16)
   ax.set_ylabel("Efficiency (%)", fontsize=16)
-  legend = plt.legend(loc='upper right', ncol=3, columnspacing=1.2, fontsize=15, bbox_to_anchor=(1.01, 1.15))
+  legend = ax.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax.set_box_aspect(1)
   plt.savefig("./plots/tdc.pdf", bbox_inches="tight")
        

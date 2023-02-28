@@ -171,7 +171,7 @@ def main():
   #ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
   ax1.set_ylabel("Efficiency", fontsize=16)
 
-  legend = ax1.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
+  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   #legend = ax1.legend(loc='upper right', ncol=1, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1.42, 1.03))
 
   ax1.grid(alpha=0.5)
@@ -192,7 +192,7 @@ def main():
   ax2.xaxis.set_ticks(np.arange(0, 6.1, 1))
   ax2.set_ylabel("Stub efficiency", fontsize=16)
   #ax.legend(loc="center left")
-  legend = ax2.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.87, 1.15))
+  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")
@@ -230,7 +230,7 @@ def main():
   ax3.yaxis.set_ticks(np.arange(1, 2, 0.2))
   ax3.set_ylabel("Average cluster size", fontsize=16)
   #ax.legend(loc="center left")
-  legend = ax3.legend(loc='upper right', ncol=2, columnspacing=1.2, fontsize=16, bbox_to_anchor=(0.88, 1.23))
+  legend = ax3.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax3.grid(alpha=0.5)
   ax3.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")

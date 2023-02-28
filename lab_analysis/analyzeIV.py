@@ -50,7 +50,7 @@ def main():
   ax1.set_ylabel("Current (A)", fontsize=16)
   ax1.set_box_aspect(1)
   #plt.ticklabel_format(axis='both', style='sci')
-  ax1.legend(loc="center right", fontsize=16, bbox_to_anchor=(1.85, 0.865))
+  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.grid(zorder=0, alpha=0.5)
   plt.savefig("./plots/iv_measurement_modules.pdf", bbox_inches="tight")
 
@@ -65,7 +65,7 @@ def main():
   ax2.set_xlabel("Voltage (V)", fontsize=16)
   ax2.set_ylabel("Current (A)", fontsize=16)
   ax2.set_box_aspect(1)
-  ax2.legend(loc="center right", ncol=1, fontsize=16, bbox_to_anchor=(1.78, 0.825))
+  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.grid(zorder=0, alpha=0.5)
   plt.savefig("./plots/iv_measurement_assembly.pdf", bbox_inches="tight")
 
