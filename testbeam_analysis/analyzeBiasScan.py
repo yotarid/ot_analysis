@@ -33,10 +33,16 @@ def main():
   psp_efficiencies, pss_efficiencies, stub_efficiencies, bias_voltages = [], [], [], []
   psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err = [], [], [] 
   psp_mean_cluster_size_list, pss_mean_cluster_size_list, bias_voltages_pss = [], [], []
+  psp_resolution_x_list, psp_resolution_y_list = [], []
+  pss_resolution_x_list, pss_resolution_y_list = [], []
+
+  #telescope resolution extracted from the resolution simulator
+  tele_resolution = 3.54142
+
   for run in run_list:
     run_number, bias = run["RunNumber"], int(run["Bias"])
     #Get result file
-    result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule.root', 'READ')
+    result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule_test.root', 'READ')
     # #Get PS-s and PS-p total efficiency profile
     psp_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_30.efficiencyVsTagTProfile_TDC
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
@@ -44,6 +50,11 @@ def main():
 
     psp_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_30.clusterSizeAssociated
     pss_cluster_size_hist = result_file.AnalysisDUT.CMSPhase2_31.clusterSizeAssociated
+
+    psp_residuals_x_hist = result_file.AnalysisDUT.CMSPhase2_30.global_residuals.residualsX
+    psp_residuals_y_hist = result_file.AnalysisDUT.CMSPhase2_30.global_residuals.residualsY
+    pss_residuals_x_hist = result_file.AnalysisDUT.CMSPhase2_31.global_residuals.residualsX
+    pss_residuals_y_hist = result_file.AnalysisDUT.CMSPhase2_31.global_residuals.residualsY
 
     psp_tdc_efficiencies, pss_tdc_efficiencies, stub_tdc_efficiencies = [], [], []
     psp_tdc_efficiencies_ntrack, pss_tdc_efficiencies_ntrack, stub_tdc_efficiencies_ntrack = [], [], [] 
@@ -56,6 +67,23 @@ def main():
 
        stub_tdc_efficiencies.append(stub_efficiency_vs_tdc.GetBinContent(tdc))
        stub_tdc_efficiencies_ntrack.append(stub_efficiency_vs_tdc.GetBinEntries(tdc))
+
+    #get PS residuals RMS
+    psp_rms_residuals_x = psp_residuals_x_hist.GetRMS()
+    psp_rms_residuals_y = psp_residuals_y_hist.GetRMS()
+    pss_rms_residuals_x = pss_residuals_x_hist.GetRMS()
+    pss_rms_residuals_y = pss_residuals_y_hist.GetRMS()
+
+    #compute PS resolution 
+    psp_resolution_x = np.sqrt(psp_rms_residuals_x**2 - tele_resolution**2)
+    psp_resolution_y = np.sqrt(psp_rms_residuals_y**2 - tele_resolution**2)
+    pss_resolution_x = np.sqrt(pss_rms_residuals_x**2 - tele_resolution**2)
+    pss_resolution_y = np.sqrt(pss_rms_residuals_y**2 - tele_resolution**2)
+
+    psp_resolution_x_list.append(psp_resolution_x)
+    psp_resolution_y_list.append(psp_resolution_y)
+    pss_resolution_x_list.append(pss_resolution_x)
+    pss_resolution_y_list.append(pss_resolution_y)
 
     #get cluster size
     psp_mean_cluster_size = psp_cluster_size_hist.GetMean()
@@ -116,6 +144,20 @@ def main():
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
   plt.savefig("./plots/bias_scan/bias_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")
+
+  #Resolution
+  fig3, ax3 = plt.subplots()
+  plt.tight_layout()
+  psp_resolution_plot = ax3.errorbar(bias_voltages, psp_resolution_x_list, linestyle='-', linewidth=1, marker='o', color='darkred', label='PS-p')
+  pss_resolution_plot = ax3.errorbar(bias_voltages, pss_resolution_x_list, linestyle='-', linewidth=1, marker='o', color='navy', label='PS-s')
+  ax3.set_xlabel('Voltage (V)', fontsize=16)
+  ax3.set_ylabel("Resolution ($\mathrm{\mu m}$)", fontsize=16)
+  legend = ax3.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
+  ax3.grid(alpha=0.5)
+  ax3.set_box_aspect(1)
+  plt.savefig("./plots/bias_scan/bias_scan_resolution_"+campaign+".pdf", bbox_inches="tight")
+
+
 
 
 

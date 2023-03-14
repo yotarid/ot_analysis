@@ -17,36 +17,44 @@ def parseCSV(file_path):
 
 def main():
   parser = argparse.ArgumentParser(description="best TDC finder")
-  parser.add_argument('-file', help="CSV file to be parsed")
+  parser.add_argument('-csv', help="CSV file to be parsed")
+  parser.add_argument('-folder', help="result folder")
   parser.add_argument('-campaign', help="Beam Test campaign")
 
   args = parser.parse_args()
 
-  run_list = parseCSV(args.file)
+  csv_file = parseCSV(args.csv)
+  folder = args.folder
   campaign = args.campaign
 
-  run_number_list, best_tdc_list = [], []
-  for run in run_list:
+  run_number_list = []
+  for run in csv_file:
     run_number = run["RunNumber"]
     print(f'Run Number : {run_number}')
     #Get result file
-    result_file = TFile(f'/nfs/dust/cms/user/yotarid/Tracker/PSAnalysis/corryvreckan/output/run{run_number}/analyze/analysis_psmodule.root', 'READ')
+    result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule.root', 'READ')
 
     # #Get PS-s and PS-p total efficiency profile
     psp_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_30.efficiencyVsTagTProfile_TDC
     pss_efficiency_vs_tdc = result_file.AnalysisEfficiency.CMSPhase2_31.efficiencyVsTagTProfile_TDC
     stub_efficiency_vs_tdc = result_file.AnalysisStubEfficiency.efficiencyVsTagTProfile_TDC
 
-    best_tdc = []
+    tdc_list, best_tdc_list, psp_eff_list, pss_eff_list = [], [], [], []
     for tdc in range(0,9):
-       psp_efficiency = psp_efficiency_vs_tdc.GetBinContent(tdc)
-       pss_efficiency = pss_efficiency_vs_tdc.GetBinContent(tdc)
-       stub_efficiency = stub_efficiency_vs_tdc.GetBinContent(tdc)
+       psp_eff_list.append(psp_efficiency_vs_tdc.GetBinContent(tdc))
+       pss_eff_list.append(pss_efficiency_vs_tdc.GetBinContent(tdc))
+       #stub_efficiency = stub_efficiency_vs_tdc.GetBinContent(tdc)
+       tdc_list.append(tdc - 1)
 
-       if psp_efficiency >= 0.95 and pss_efficiency >= 0.95:
-         best_tdc.append(tdc - 1)
+       #if psp_efficiency >= 0.95 and pss_efficiency >= 0.95:
 
-    print(f'Run Number = {run_number} ; Best TDC = {best_tdc}')
+    psp_eff_max = max(psp_eff_list)
+    pss_eff_max = max(pss_eff_list)
+    for idx, tdc in enumerate(tdc_list):
+      if (psp_eff_max - psp_eff_list[idx]) < 0.05 and (pss_eff_max - pss_eff_list[idx]) < 0.05:
+        best_tdc_list.append(tdc)
+
+    print(f'Run Number = {run_number} ; Best TDC = {best_tdc_list}')
     print(f'')
 
   #best_tdc_plot = plt.plot(run_number_list, best_tdc_list, linestyle='None', marker='d', color='darkred', label="Best TDC")
