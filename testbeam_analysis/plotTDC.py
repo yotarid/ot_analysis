@@ -30,9 +30,9 @@ def main():
   tdc, psp_eff, pss_eff, stub_eff = [], [], [], []
   for tdc_bin in range(1, psp_tdc_eff.GetNbinsX()+1):
     tdc.append(int(tdc_bin)-1)
-    psp_eff.append(psp_tdc_eff.GetBinContent(tdc_bin)*100)
-    pss_eff.append(pss_tdc_eff.GetBinContent(tdc_bin)*100)
-    stub_eff.append(stub_tdc_eff.GetBinContent(tdc_bin)*100)
+    psp_eff.append(psp_tdc_eff.GetBinContent(tdc_bin))
+    pss_eff.append(pss_tdc_eff.GetBinContent(tdc_bin))
+    stub_eff.append(stub_tdc_eff.GetBinContent(tdc_bin))
 
   fig, ax = plt.subplots()
   axes = fig.gca()
@@ -53,7 +53,7 @@ def main():
   ax.set_xlim(0,7)
   ax.grid(zorder=0, alpha=0.5)
   ax.set_xlabel("TDC phase", fontsize=16)
-  ax.set_ylabel("Efficiency (%)", fontsize=16)
+  ax.set_ylabel("Efficiency", fontsize=16)
   legend = ax.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax.set_box_aspect(1)
   plt.savefig("./plots/tdc.pdf", bbox_inches="tight")
