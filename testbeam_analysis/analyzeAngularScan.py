@@ -25,8 +25,7 @@ def calculateError(eff, ntracks):
 
 def calculatePt(angle):
   angle_rad = angle*np.pi/180
-  return 0.57 * 0.2484475 / np.sin(angle_rad)
-#return abs(angle)
+  return 0.57 * 0.52450 / np.sin(angle_rad)
 
 def get_fit_dict(angles, cluster_size_list):
   xMin = -60.

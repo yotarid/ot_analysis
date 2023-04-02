@@ -22,6 +22,20 @@ def parseCSV(file_path):
 def fit_func(x, mu, sigma):
   return 0.5 * special.erfc((x - mu) / (sqrt(2.) * sigma))
 
+def mpa_thdac_to_e(x):
+  return x*94
+
+def ssa_thdac_to_e(x):
+  return x*250
+
+def mpa_e_to_thdac(x):
+  return x/94
+
+def ssa_e_to_thdac(x):
+  return x/250
+
+
+
 def main():
   parser = argparse.ArgumentParser(description="Noise")
   parser.add_argument('-csv', help="CSV file to be parsed")
@@ -47,7 +61,7 @@ def main():
     f_ssa = TFile.Open(f'results/{folder}/Hybrid'+ str(ext_ssa) +'.root', 'READ')
     f_mpa = TFile.Open(f'results/{folder}/Hybrid' + str(ext_mpa) + '.root', 'READ')
 
-    if module == "PS_40_05_DSY-00005":
+    if module == "Prototype 4":
       optical_group_id = 1
 
     noise_mpa, noise_ssa = [], []
@@ -96,13 +110,6 @@ def main():
 
   m_colors = ["orange", "purple", "brown", "olive"]
 
-  #ssa
-  ax11 = ax1.twiny()
-  ax11.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
-  ax11.set_xlim(0,8*ssa_thdac)
-  #ax11.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-  ax11.set_box_aspect(1)
-
   for idx, m in enumerate(modules):
     print('Module ' + str(m) + ' ' + str(len(ssa_noise_dict[m])))
     ax1.hist(ssa_noise_dict[m], bins=40, range=(0,10), density=True, histtype='step', color=m_colors[idx], linewidth=1, label=m, zorder=3)
@@ -116,18 +123,16 @@ def main():
   ax1.yaxis.set_ticks(np.arange(0,2.1,0.2))
   legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax1.set_box_aspect(1)
+
+  secax1 = ax1.secondary_xaxis('top', functions=(ssa_thdac_to_e, ssa_e_to_thdac))
+  secax1.set_xlabel(r"Channel Noise ($\mathrm{e^{-}}$)", fontsize=16)
+
   plt.savefig("./plots/noise_modules_ssa.pdf", bbox_inches="tight")
 
 
   #mpa
   fig2, ax2 = plt.subplots()
   plt.tight_layout()
-
-  ax22 = ax2.twiny()
-  ax22.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
-  ax22.set_xlim(0, 500)
-  #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-  ax22.set_box_aspect(1)
 
   for idx, m in enumerate(modules):
     print('Module ' + str(m) + ' ' + str(len(mpa_noise_dict[m])))
@@ -141,6 +146,9 @@ def main():
   #ax2.xaxis.set_ticks(np.arange(0,8.1,2))
   ax2.yaxis.set_ticks(np.arange(0,2.3,0.2))
   ax2.set_box_aspect(1)
+
+  secax2 = ax2.secondary_xaxis('top', functions=(mpa_thdac_to_e, mpa_e_to_thdac))
+  secax2.set_xlabel(r"Channel Noise ($\mathrm{e^{-}}$)", fontsize=16)
 
   legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.savefig("./plots/noise_modules_mpa.pdf", bbox_inches="tight")

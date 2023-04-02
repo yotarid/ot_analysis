@@ -22,6 +22,20 @@ def parseCSV(file_path):
 def fit_func(x, mu, sigma):
   return 0.5 * special.erfc((x - mu) / (sqrt(2.) * sigma))
 
+def mpa_thdac_to_e(x):
+  return x*94
+
+def ssa_thdac_to_e(x):
+  return x*250
+
+def mpa_e_to_thdac(x):
+  return x/94
+
+def ssa_e_to_thdac(x):
+  return x/250
+
+
+
 def main():
   parser = argparse.ArgumentParser(description="Noise")
   parser.add_argument('-csv', help="CSV file to be parsed")
@@ -62,7 +76,7 @@ def main():
     f_noise = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
     if stage == "pre-encapsulation" or stage == "post-encapsulation":
       optical_group_id = 1
-    for hybrid_local_id in range(0, 2):
+    for hybrid_local_id in range(0, 1):
       hybrid_id = 2*optical_group_id + hybrid_local_id
       hybrid_ssa, hybrid_mpa = [], []
       for chip_id in range(0, 8):
@@ -129,13 +143,6 @@ def main():
   fig1, ax1 = plt.subplots()
   plt.tight_layout()
 
-  #ssa
-  ax11 = ax1.twiny()
-  ax11.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
-  ax11.set_xlim(0,8*ssa_thdac)
-  #ax11.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-  ax11.set_box_aspect(1)
-
   ax1.hist(ssa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='Pre-assembly', zorder=3)
   ax1.hist(ssa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='Pre-encapsulation', zorder=3)
   ax1.hist(ssa_noise_array["post-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='navy', linewidth=1, label='Post-encapsulation', zorder=3)
@@ -148,18 +155,16 @@ def main():
   ax1.yaxis.set_ticks(np.arange(0,2.1,0.2))
   legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax1.set_box_aspect(1)
+
+  secax1 = ax1.secondary_xaxis('top', functions=(ssa_thdac_to_e, ssa_e_to_thdac))
+  secax1.set_xlabel(r"Channel Noise ($\mathrm{e^{-}}$)", fontsize=16)
+
   plt.savefig("./plots/noise_assembly_ssa.pdf", bbox_inches="tight")
 
 
   #mpa
   fig2, ax2 = plt.subplots()
   plt.tight_layout()
-
-  ax22 = ax2.twiny()
-  ax22.set_xlabel(r"Channel Noise ($e^{-}$)", fontsize=16)
-  ax22.set_xlim(0, 500)
-  #ax22.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-  ax22.set_box_aspect(1)
 
   ax2.hist(mpa_noise_array["pre-assembly"], bins=40, range=(0,10), density=True, histtype='step', color='darkgrey', linewidth=1, label='Pre-assembly', zorder=3)
   ax2.hist(mpa_noise_array["pre-encapsulation"], bins=40, range=(0,10), density=True, histtype='step', color='steelblue', linewidth=1, label='Pre-encapsulation', zorder=3)
@@ -172,6 +177,9 @@ def main():
   #ax2.xaxis.set_ticks(np.arange(0,8.1,2))
   ax2.yaxis.set_ticks(np.arange(0,2.1,0.2))
   ax2.set_box_aspect(1)
+
+  secax2 = ax2.secondary_xaxis('top', functions=(mpa_thdac_to_e, mpa_e_to_thdac))
+  secax2.set_xlabel(r"Channel Noise ($\mathrm{e^{-}}$)", fontsize=16)
 
   legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   plt.savefig("./plots/noise_assembly_mpa.pdf", bbox_inches="tight")

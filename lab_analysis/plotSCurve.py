@@ -22,15 +22,15 @@ def fit_func(x, mu, sigma):
 
 def main():
   parser = argparse.ArgumentParser(description="SCurve")
-  parser.add_argument('-file', help="CSV file to be parsed")
+  parser.add_argument('-csv', help="CSV file to be parsed")
 
   args = parser.parse_args()
-  noise_files = parseCSV(args.file)
+  csv_file = parseCSV(args.csv)
 
   f_ssa, f_mpa = TFile(), TFile()
   h_ssa, h_mpa = TH2F(), TH2F()
   board_id, optical_group_id, hybrid_id, ssa_id, mpa_id = 0, 0, 0, 0, 8
-  for line in noise_files:
+  for line in csv_file:
     chip, folder = line["chip"], line["folder"]
     if chip == "ssa":
       f_ssa = TFile.Open(f'results/{folder}/Hybrid.root', 'READ')
@@ -58,7 +58,7 @@ def main():
   ax1.set_ylim(0,1.05)
   ax1.set_xlim(50,110)
   ax1.set_xlabel('Threshold (ThDAC)', fontsize=16)
-  ax1.set_ylabel('Efficiency', fontsize=16)
+  ax1.set_ylabel('Occupancy', fontsize=16)
   ax1.grid(alpha=0.5)
   ax1.set_box_aspect(1)
   plt.savefig("./plots/scurve_ssa.pdf", bbox_inches="tight")
@@ -80,7 +80,7 @@ def main():
   ax2.set_ylim(0,1.05)
   ax2.set_xlim(175,240)
   ax2.set_xlabel('Threshold (ThDAC)', fontsize=16)
-  ax2.set_ylabel('Efficiency', fontsize=16)
+  ax2.set_ylabel('Occupancy', fontsize=16)
   ax2.grid(alpha=0.5)
   ax2.set_box_aspect(1)
   plt.savefig("./plots/scurve_mpa.pdf", bbox_inches="tight")

@@ -36,7 +36,7 @@ def main():
   plt.tight_layout()
   plot_lut = ax1.bar(np.linspace(1,5,3), lookup_tables_list, 0.5, align='center', color='steelblue', alpha=1, label='LUTs', zorder=3)
   plot_ff = ax1.bar(np.linspace(1.5,5.5,3), flipflops_list, 0.5, align='center', color='slategrey', alpha=1, label='FFs', zorder=3)
-  plot_ram = ax1.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', alpha=1, label='BRAMs', zorder=3)
+  plot_ram = ax1.bar(np.linspace(2,6,3), block_rams_list, 0.5, align='center', color='darkslategrey', alpha=1, label='RAM', zorder=3)
 
   ax1.set_ylim([0, 100])
   ax1.set_ylabel("Resource utilization (%)", fontsize=16)

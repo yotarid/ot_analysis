@@ -42,9 +42,9 @@ def main():
     
   fig1, ax1 = plt.subplots()
 
-  ax1.plot(v_dict["PS_40_05_DSY-00003"], i_dict["PS_40_05_DSY-00003"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00003")    
-  ax1.plot(v_dict["PS_40_05_DSY-00004"], i_dict["PS_40_05_DSY-00004"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00004")    
-  ax1.plot(v_dict["PS_40_05_DSY-00005"], i_dict["PS_40_05_DSY-00005"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="PS_40_05_DSY-00005")    
+  ax1.plot(v_dict["PS_40_05_DSY-00003"], i_dict["PS_40_05_DSY-00003"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="Prototype 1")    
+  ax1.plot(v_dict["PS_40_05_DSY-00004"], i_dict["PS_40_05_DSY-00004"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="Prototype 2")    
+  ax1.plot(v_dict["PS_40_05_DSY-00005"], i_dict["PS_40_05_DSY-00005"], linestyle='-', linewidth=1, marker='o', markersize=3,  label="Prototype 3")    
 
   ax1.set_xlabel("Voltage (V)", fontsize=16)
   ax1.set_ylabel("Current (A)", fontsize=16)
