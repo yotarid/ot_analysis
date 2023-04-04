@@ -134,6 +134,10 @@ def main():
   ax1.set_box_aspect(1)
   plt.savefig("./plots/bias_scan/bias_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
 
+  ax1.set_ylim(0.8, None)
+  plt.savefig("./plots/bias_scan/bias_scan_efficiency_"+campaign+"_zoomed.pdf", bbox_inches="tight")
+
+
   fig2, ax2 = plt.subplots()
   plt.tight_layout()
   psp_cluster_size_plot = ax2.errorbar(bias_voltages, psp_mean_cluster_size_list, linestyle='-', linewidth=1, marker='o', color='darkred', label='PS-p')

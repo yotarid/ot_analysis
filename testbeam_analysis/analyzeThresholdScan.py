@@ -136,6 +136,9 @@ def main():
   ax1.set_box_aspect(1)
   plt.savefig("./plots/threshold_scan/threshold_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
 
+  ax1.set_ylim(0.8, None)
+  plt.savefig("./plots/threshold_scan/threshold_scan_efficiency_"+campaign+"_zoomed.pdf", bbox_inches="tight")
+
   #Cluster size
   fig2, ax2 = plt.subplots()
   plt.tight_layout()

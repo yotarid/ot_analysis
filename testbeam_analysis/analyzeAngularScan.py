@@ -20,6 +20,9 @@ def parseCSV(file_path):
 def fit_func(x, p0, p1, p2, p3):
     return 1 - 1/2 * (p0 + p1*special.erf((x-p2)/p3))
 
+def fit_func_pt(x, p0, p1, p2, p3):
+    return 1 - 1/2 * (p0 + p1*special.erf((x-p2)/p3))
+
 def calculateError(eff, ntracks):
   return np.sqrt((eff * (1 - eff))/ntracks)
 
@@ -74,8 +77,9 @@ def main():
   campaign = args.campaign
   psp_efficiencies, pss_efficiencies, stub_efficiencies, stub_efficiencies_pos, stub_efficiencies_neg = [], [], [], [], []
   angles_pos, angles_neg, angles  =  [], [], []
-  pt_momentum  =  []
+  pt_momentum_pos, pt_momentum_neg, pt_momentum  =  [], [], []
   psp_efficiencies_err, pss_efficiencies_err, stub_efficiencies_err, stub_efficiencies_pos_err, stub_efficiencies_neg_err = [], [], [], [], [] 
+  stub_efficiencies_pt_pos, stub_efficiencies_pt_neg = [], [] 
   psp_mean_cluster_size_list, psp_mean_cluster_size_err_list, pss_mean_cluster_size_list, pss_mean_cluster_size_err_list= [], [], [], []
   psp_resolution_x_list, psp_resolution_err_x_list, psp_resolution_y_list = [], [], []
   pss_resolution_x_list, pss_resolution_err_x_list, pss_resolution_y_list = [], [], []
@@ -85,7 +89,7 @@ def main():
 
   for run in run_list:
     run_number, angle = run["RunNumber"], float(run["Angle"])
-    angle = angle - 0.45
+    #angle = angle - 0.45
     print(f'Run Number : {run_number}, Angle : {angle}')
     #Get result file
     result_file = TFile(f'{folder}/output/run{run_number}/analyze/analysis_psmodule_test.root', 'READ')
@@ -180,69 +184,6 @@ def main():
     stub_efficiencies.append(max_stub_efficiency)
     stub_efficiencies_err.append(calculateError(max_stub_efficiency, stub_ntrack))
 
-    if angle >= 0 :
-      pt_momentum.append(calculatePt(angle))
-      angles_pos.append(angle)
-      stub_efficiencies_pos.append(max_stub_efficiency)
-      stub_efficiencies_pos_err.append(calculateError(max_stub_efficiency, stub_ntrack))
-    else:
-      angles_neg.append(angle)
-      stub_efficiencies_neg.append(max_stub_efficiency)
-      stub_efficiencies_neg_err.append(calculateError(max_stub_efficiency, stub_ntrack))
-
-
-  #################################################################################
-  ######################### Stub Effeciency Analysis ############################
-  #################################################################################
-  #params, cov = optimize.curve_fit(fit_func, np.array(angles), np.array(stub_efficiency), p0=[1, 1, 15, 1], maxfev=8000)
-  params_pos, cov_pos = optimize.curve_fit(fit_func, np.array(angles_pos), np.array(stub_efficiencies_pos), maxfev=10000)
-  params_neg, cov_neg = optimize.curve_fit(fit_func, np.array(angles_neg), np.array(stub_efficiencies_neg), maxfev=10000)
-  print(params_pos, params_neg)
-  
-
-  fig1, ax1 = plt.subplots()
-  plt.tight_layout()
-
-  ax1.errorbar(angles, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
-  ax1.errorbar(angles, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
-  ax1.errorbar(angles, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax1.errorbar(np.linspace(0, 26, 10000), np.array(fit_func(np.linspace(0, 26, 10000), *params_pos)), linestyle='--', linewidth=1, capsize=3, color='darkgreen', label='Stubs fit')
-  ax1.errorbar(np.linspace(0, -26, 10000), np.array(fit_func(np.linspace(0, -26, 10000), *params_neg)), linestyle='--', linewidth=1, capsize=3, color='darkgreen')
-
-
-  ax1.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
-  #ax1.set_xlim(-25,25)
-  #ax1.xaxis.set_ticks(np.arange(-25, 25, 10))
-  #ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
-  ax1.set_ylabel("Efficiency", fontsize=16)
-
-  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
-  #legend = ax1.legend(loc='upper right', ncol=1, columnspacing=1.2, fontsize=16, bbox_to_anchor=(1.42, 1.03))
-
-  ax1.grid(alpha=0.5)
-  ax1.set_box_aspect(1)
-  plt.savefig("./plots/angular_scan/angular_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
-
-  #################################################################################
-  ######################### pT Discrimination Analysis ############################
-  #################################################################################
-  params_pt, cov_pt = optimize.curve_fit(fit_func, np.array(pt_momentum), np.array(stub_efficiencies_pos), maxfev=10000)
-  print(params_pos, params_neg, params_pt)
-
-  fig2, ax2 = plt.subplots()
-  plt.tight_layout()
-  ax2.errorbar(pt_momentum, stub_efficiencies_pos, yerr=stub_efficiencies_pos_err, linestyle='None', marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
-  ax2.errorbar(np.linspace(0, int(max(pt_momentum))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum))+1, 10000), *params_pt)), linestyle='--', linewidth=1, color='darkgreen', label='Stubs fit')
-  ax2.set_xlabel('Transverse momentum (GeV)', fontsize=16)
-  ax2.xaxis.set_ticks(np.arange(0, 6.1, 1))
-  ax2.set_ylabel("Stub efficiency", fontsize=16)
-  #ax.legend(loc="center left")
-  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
-  ax2.grid(alpha=0.5)
-  ax2.set_box_aspect(1)
-  plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")
-
-
   #################################################################################
   ######################### Cluster Size Analysis ############################
   #################################################################################
@@ -270,7 +211,7 @@ def main():
   pss_plot = ax3.errorbar(angles, pss_mean_cluster_size_list, yerr=pss_mean_cluster_size_err_list, linestyle='None', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')  
   pss_fit_plot = ax3.errorbar(pss_xfit, pss_yfit, linestyle='--', linewidth=1, color='navy', label='PS-s fit')
 
-  ax3.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
+  ax3.set_xlabel('Uncorrected angle ($^{\circ}$)', fontsize=16)
   #ax3.xaxis.set_ticks(np.arange(-25, 25, 10))
   ax3.yaxis.set_ticks(np.arange(1, 2, 0.2))
   ax3.set_ylabel("Average cluster size", fontsize=16)
@@ -280,6 +221,85 @@ def main():
   ax3.set_box_aspect(1)
   plt.savefig("./plots/angular_scan/angular_scan_cluster_size_"+campaign+".pdf", bbox_inches="tight")
 
+
+  #################################################################################
+  ######################### Stub Effeciency Analysis ############################
+  #################################################################################
+  angles_corr = angles - np.mean([psp_param_theta0, pss_param_theta0])
+  for i in range(len(angles_corr)):
+    pt = calculatePt(angles_corr[i])
+    pt_momentum.append(pt)
+    if pt >= 0 :
+      pt_momentum_pos.append(pt)
+      stub_efficiencies_pt_pos.append(stub_efficiencies[i])
+    else:
+      pt_momentum_neg.append(pt)
+      stub_efficiencies_pt_neg.append(stub_efficiencies[i])
+
+    if angles_corr[i] >= 0 :
+      angles_pos.append(angles_corr[i])
+      stub_efficiencies_pos.append(stub_efficiencies[i])
+      stub_efficiencies_pos_err.append(stub_efficiencies_err[i])
+    else:
+      angles_neg.append(angles_corr[i])
+      stub_efficiencies_neg.append(stub_efficiencies[i])
+      stub_efficiencies_neg_err.append(stub_efficiencies_err[i])
+
+  #params, cov = optimize.curve_fit(fit_func, np.array(angles), np.array(stub_efficiency), p0=[1, 1, 15, 1], maxfev=8000)
+  params_pos, cov_pos = optimize.curve_fit(fit_func, np.array(angles_pos), np.array(stub_efficiencies_pos), maxfev=10000)
+  params_neg, cov_neg = optimize.curve_fit(fit_func, np.array(angles_neg), np.array(stub_efficiencies_neg), maxfev=10000)
+  print(params_pos, params_neg)
+
+  fig1, ax1 = plt.subplots()
+  plt.tight_layout()
+
+  ax1.errorbar(angles_corr, psp_efficiencies, yerr=psp_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
+  ax1.errorbar(angles_corr, pss_efficiencies, yerr=pss_efficiencies_err, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
+  ax1.errorbar(angles_corr, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', linewidth=1, marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
+  ax1.errorbar(np.linspace(0, 26, 10000), np.array(fit_func(np.linspace(0, 26, 10000), *params_pos)), linestyle='--', linewidth=1, capsize=3, color='darkgreen', label='Stubs fit')
+  ax1.errorbar(np.linspace(0, -26, 10000), np.array(fit_func(np.linspace(0, -26, 10000), *params_neg)), linestyle='--', linewidth=1, capsize=3, color='darkgreen')
+
+
+  ax1.set_xlabel('Corrected angle ($^{\circ}$)', fontsize=16)
+  #ax1.set_xlim(-25,25)
+  #ax1.xaxis.set_ticks(np.arange(-25, 25, 10))
+  #ax1.xaxis.set_ticks(np.arange(-40, 41, 10))
+  ax1.set_ylabel("Efficiency", fontsize=16)
+  legend = ax1.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
+  ax1.grid(alpha=0.5)
+  ax1.set_box_aspect(1)
+  plt.savefig("./plots/angular_scan/angular_scan_efficiency_"+campaign+".pdf", bbox_inches="tight")
+
+  ax1.set_ylim(0.8, None)
+  plt.savefig("./plots/angular_scan/angular_scan_efficiency_"+campaign+"_zoomed.pdf", bbox_inches="tight")
+
+  #################################################################################
+  ######################### pT Discrimination Analysis ############################
+  #################################################################################
+  params_pt_pos, cov_pt_pos = optimize.curve_fit(fit_func_pt, np.array(pt_momentum_pos), np.array(stub_efficiencies_pt_pos), maxfev=10000)
+  params_pt_neg, cov_pt_neg = optimize.curve_fit(fit_func_pt, np.array(pt_momentum_neg), np.array(stub_efficiencies_pt_neg), maxfev=10000)
+  print(params_pt_pos, params_pt_neg)
+
+  fig2, ax2 = plt.subplots()
+  plt.tight_layout()
+  ax2.errorbar(pt_momentum, stub_efficiencies, yerr=stub_efficiencies_err, linestyle='None', marker='o', markersize=5, capsize=3, color='darkgreen', label='Stubs')
+  ax2.errorbar(np.linspace(0, int(max(pt_momentum_pos))+1, 10000), np.array(fit_func(np.linspace(0, int(max(pt_momentum_pos))+1, 10000), *params_pt_pos)), linestyle='--', linewidth=1, color='darkgreen', label='Stubs fit')
+  ax2.errorbar(np.linspace(0, int(min(pt_momentum_neg))-1, 10000), np.array(fit_func(np.linspace(0, int(min(pt_momentum_neg))+1, 10000), *params_pt_neg)), linestyle='--', linewidth=1, color='darkgreen', label='Stubs fit')
+  ax2.set_xlabel('Transverse momentum (GeV)', fontsize=16)
+  #ax2.xaxis.set_ticks(np.arange(0, 6.1, 1))
+  ax2.set_ylabel("Stub efficiency", fontsize=16)
+  #ax.legend(loc="center left")
+  #ax2.set_xlim(0,None)
+  legend = ax2.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
+  ax2.grid(alpha=0.5)
+  ax2.set_box_aspect(1)
+  plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+".pdf", bbox_inches="tight")
+
+  ax2.set_ylim(0,0.6)
+  ax2.set_xlim(0,2)
+  plt.savefig("./plots/angular_scan/angular_scan_pT_efficiency_"+campaign+"_zoomed.pdf", bbox_inches="tight")
+
+
   #################################################################################
   ######################### Resolution Analysis ############################
   #################################################################################
@@ -288,8 +308,10 @@ def main():
   plt.tight_layout()
   psp_resolution_plot = ax4.errorbar(angles, psp_resolution_x_list, yerr=psp_resolution_err_x_list, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='darkred', label='PS-p')
   pss_resolution_plot = ax4.errorbar(angles, pss_resolution_x_list, yerr=pss_resolution_err_x_list, linestyle='-', linewidth=1, marker='o', markersize=5, capsize=3, color='navy', label='PS-s')
-  ax4.set_xlabel('Angle ($^{\circ}$)', fontsize=16)
+  ax4.plot([-30, 30], [28.9, 28.9], linestyle='dashed', marker='None', color="darkgreen", alpha=1, label='Expected')
+  ax4.set_xlabel('Corrected angle ($^{\circ}$)', fontsize=16)
   ax4.set_ylabel("Resolution ($\mathrm{\mu m}$)", fontsize=16)
+  ax4.set_xlim(-30,30)
   legend = ax4.legend(loc='upper left', ncol=1, fontsize=16, bbox_to_anchor=(1., 1.03))
   ax4.grid(alpha=0.5)
   ax4.set_box_aspect(1)

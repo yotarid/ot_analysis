@@ -35,22 +35,22 @@ def main():
     stub_eff.append(stub_tdc_eff.GetBinContent(tdc_bin))
 
   fig, ax = plt.subplots()
-  axes = fig.gca()
   psp_eff = np.flip(np.roll(psp_eff, 5))
   pss_eff = np.flip(np.roll(pss_eff, 5))
   stub_eff = np.flip(np.roll(stub_eff, 5))
-  #nbins = int(max(tdc) - min(tdc)) 
-  n,bins,patches = ax.hist(tdc, weights=psp_eff, bins=8, histtype='step', color='darkred', linewidth='1', fill=False, label='PS-p', zorder=3)
-  plt.scatter(bins[:-1]+ 0.5*(bins[1:] - bins[:-1]), n, marker='o', c='darkred', s=20, alpha=1)
 
-  n,bins,patches = ax.hist(tdc, weights=pss_eff, bins=8, histtype='step', color='navy', linewidth='1', fill=False, label='PS-s', zorder=3)
-  plt.scatter(bins[:-1]+ 0.5*(bins[1:] - bins[:-1]), n, marker='o', c='navy', s=20, alpha=1)
+  ax.stairs(psp_eff, color='darkred', label='PS-p')
+  plt.scatter(np.linspace(0.5, 7.5, 8), psp_eff, marker='o', c='darkred', s=20, alpha=1)
 
-  n,bins,patches = ax.hist(tdc, weights=stub_eff, bins=8, histtype='step', color='darkgreen', linewidth='1', fill=False, label='Stub', zorder=3)
-  plt.scatter(bins[:-1]+ 0.5*(bins[1:] - bins[:-1]), n, marker='o', c='darkgreen', s=20, alpha=1)
+  ax.stairs(pss_eff, color='navy', label='PS-s')
+  plt.scatter(np.linspace(0.5, 7.5, 8), pss_eff, marker='o', c='navy', s=20, alpha=1)
 
+  ax.stairs(stub_eff, color='darkgreen', label='Stubs')
+  plt.scatter(np.linspace(0.5, 7.5, 8), stub_eff, marker='o', c='darkgreen', s=20, alpha=1)
+
+  axes = fig.gca()
   axes.get_xaxis().set_major_locator(MaxNLocator(integer=True))
-  ax.set_xlim(0,7)
+  ax.set_xlim(0,8)
   ax.grid(zorder=0, alpha=0.5)
   ax.set_xlabel("TDC phase", fontsize=16)
   ax.set_ylabel("Efficiency", fontsize=16)
